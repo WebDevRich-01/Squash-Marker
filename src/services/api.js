@@ -1,5 +1,5 @@
-const API_URL =
-  process.env.REACT_APP_API_URL || "https://squash-marker-backend.onrender.com";
+// Instead of process.env.API_URL, we'll use a direct value for local development
+const API_URL = "https://squash-marker-backend.onrender.com";
 
 export const api = {
   // Match endpoints

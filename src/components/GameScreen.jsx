@@ -21,15 +21,18 @@ export default function GameScreen() {
     handleLetDecision,
     startNextGame,
     checkGameWin,
+    handleGameCompletion,
   } = useGameStore();
 
   // Check for game wins
   useEffect(() => {
     const winner = checkGameWin();
     if (winner) {
-      setGameWinModalOpen(true);
+      handleGameCompletion().then(() => {
+        setGameWinModalOpen(true);
+      });
     }
-  }, [player1.score, player2.score, checkGameWin]);
+  }, [player1.score, player2.score, checkGameWin, handleGameCompletion]);
 
   const handleStartNext = () => {
     startNextGame();

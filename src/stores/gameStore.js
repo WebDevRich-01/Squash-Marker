@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { api } from "../services/api";
 
 const getUniqueTimestamp = () => {
   return Date.now() * 1000 + Math.floor(Math.random() * 1000);
@@ -53,6 +54,10 @@ const useGameStore = create((set, get) => ({
   ],
 
   firstServiceComplete: false,
+
+  // Add error state
+  saveError: null,
+  isSaving: false,
 
   // Actions
   setPlayerDetails: (playerNum, details) =>
@@ -535,7 +540,8 @@ const useGameStore = create((set, get) => ({
       ],
     })),
 
-  initializeGame: (settings) =>
+  // Initialize game with settings
+  initializeGame: (settings) => {
     set(() => ({
       matchSettings: {
         pointsToWin: settings.pointsToWin,
@@ -543,15 +549,15 @@ const useGameStore = create((set, get) => ({
         bestOf: settings.bestOf,
       },
       player1: {
-        name: settings.player1Name || "Player 1",
-        color: settings.player1Color || "border-red-500",
+        name: settings.player1Name,
+        color: settings.player1Color,
         score: 0,
         serving: true,
         serveSide: "R",
       },
       player2: {
-        name: settings.player2Name || "Player 2",
-        color: settings.player2Color || "border-blue-500",
+        name: settings.player2Name,
+        color: settings.player2Color,
         score: 0,
         serving: false,
         serveSide: "R",
@@ -569,7 +575,73 @@ const useGameStore = create((set, get) => ({
           timestamp: getUniqueTimestamp(),
         },
       ],
-    })),
+    }));
+  },
+
+  // Updated save method with error handling
+  saveCompletedMatch: async () => {
+    const state = get();
+    set({ isSaving: true, saveError: null });
+
+    const matchData = {
+      player1Name: state.player1.name,
+      player2Name: state.player2.name,
+      player1Color: state.player1.color,
+      player2Color: state.player2.color,
+      gameScores: state.gameScores,
+      matchSettings: state.matchSettings,
+      date: new Date(),
+    };
+
+    try {
+      await api.saveMatch(matchData);
+      set({ isSaving: false });
+      return true;
+    } catch (error) {
+      set({
+        saveError: "Failed to save match. Please try again.",
+        isSaving: false,
+      });
+      return false;
+    }
+  },
+
+  // Updated game completion handler
+  handleGameCompletion: async () => {
+    const state = get();
+    const { player1, player2, currentGame } = state;
+
+    // Save current game score
+    set((state) => ({
+      gameScores: [
+        ...state.gameScores,
+        { player1: player1.score, player2: player2.score },
+      ],
+    }));
+
+    // Check if match is won
+    const matchWon = get().checkMatchWin();
+    if (matchWon) {
+      set({ matchWon: true });
+      const savedSuccessfully = await get().saveCompletedMatch();
+      if (!savedSuccessfully) {
+        // Match is still won but save failed
+        console.error("Match save failed");
+      }
+    }
+
+    // Start next game if match isn't over
+    if (!matchWon) {
+      set((state) => ({
+        currentGame: currentGame + 1,
+        player1: { ...state.player1, score: 0 },
+        player2: { ...state.player2, score: 0 },
+      }));
+    }
+  },
+
+  // Add method to clear error
+  clearSaveError: () => set({ saveError: null }),
 }));
 
 export default useGameStore;
