@@ -1,3 +1,5 @@
+import useGameStore from "../stores/gameStore";
+
 export default function GameWinModal({
   winningPlayer,
   gameNumber,
@@ -6,6 +8,11 @@ export default function GameWinModal({
   onStartNext,
   onFinishMatch,
 }) {
+  const playerName =
+    useGameStore((state) =>
+      winningPlayer === 1 ? state.player1.name : state.player2.name
+    ) || `Player ${winningPlayer}`;
+
   if (matchWon) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -13,9 +20,7 @@ export default function GameWinModal({
           <h2 className="text-2xl font-bold mb-4 text-center">
             Match Complete!
           </h2>
-          <p className="text-center mb-4">
-            Player {winningPlayer} wins the match!
-          </p>
+          <p className="text-center mb-4">{playerName} wins the match!</p>
           <div className="mb-4">
             <h3 className="font-bold mb-2">Game Scores:</h3>
             {gameScores.map((score, index) => (
@@ -44,9 +49,7 @@ export default function GameWinModal({
         <h2 className="text-2xl font-bold mb-4 text-center">
           Game {gameNumber - 1} Complete!
         </h2>
-        <p className="text-center mb-6">
-          Player {winningPlayer} wins the game!
-        </p>
+        <p className="text-center mb-6">{playerName} wins the game!</p>
         <button
           onClick={onStartNext}
           className="w-full p-3 bg-blue-500 text-white rounded hover:bg-blue-600"

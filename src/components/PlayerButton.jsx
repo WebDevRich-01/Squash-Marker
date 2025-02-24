@@ -13,7 +13,7 @@ export default function PlayerButton({ playerNum }) {
         ${player.serving ? "bg-gray-100" : "bg-white"}
       `}
     >
-      Player {playerNum}
+      {player.name || `Player ${playerNum}`}
     </button>
   );
 }
