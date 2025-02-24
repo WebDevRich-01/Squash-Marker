@@ -1,9 +1,30 @@
+import { useState } from "react";
 import useGameStore from "../stores/gameStore";
 import ScoreColumns from "./ScoreColumns";
 import PlayerButton from "./PlayerButton";
+import LetDecisionModal from "./LetDecisionModal";
 
 export default function GameScreen() {
-  const { player1, player2, undoLastPoint, toggleServeSide } = useGameStore();
+  const [letModalOpen, setLetModalOpen] = useState(false);
+  const [letCallingPlayer, setLetCallingPlayer] = useState(null);
+  const {
+    player1,
+    player2,
+    undoLastPoint,
+    toggleServeSide,
+    handleLetDecision,
+  } = useGameStore();
+
+  const handleLetButtonClick = (playerNum) => {
+    setLetCallingPlayer(playerNum);
+    setLetModalOpen(true);
+  };
+
+  const handleLetDecisionMade = (decision) => {
+    handleLetDecision(letCallingPlayer, decision);
+    setLetModalOpen(false);
+    setLetCallingPlayer(null);
+  };
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
@@ -36,7 +57,10 @@ export default function GameScreen() {
               )}
             </div>
             <PlayerButton playerNum={1} />
-            <button className="w-full p-2 mt-2 bg-gray-200 hover:bg-gray-300">
+            <button
+              onClick={() => handleLetButtonClick(1)}
+              className="w-full p-2 mt-2 bg-gray-200 hover:bg-gray-300"
+            >
               Let
             </button>
           </div>
@@ -55,7 +79,10 @@ export default function GameScreen() {
               )}
             </div>
             <PlayerButton playerNum={2} />
-            <button className="w-full p-2 mt-2 bg-gray-200 hover:bg-gray-300">
+            <button
+              onClick={() => handleLetButtonClick(2)}
+              className="w-full p-2 mt-2 bg-gray-200 hover:bg-gray-300"
+            >
               Let
             </button>
           </div>
@@ -69,6 +96,17 @@ export default function GameScreen() {
       >
         Undo
       </button>
+
+      {letModalOpen && (
+        <LetDecisionModal
+          playerNum={letCallingPlayer}
+          onDecision={handleLetDecisionMade}
+          onCancel={() => {
+            setLetModalOpen(false);
+            setLetCallingPlayer(null);
+          }}
+        />
+      )}
     </div>
   );
 }

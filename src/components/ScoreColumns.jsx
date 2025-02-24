@@ -34,49 +34,69 @@ export default function ScoreColumns() {
         className="absolute inset-0 flex flex-col overflow-y-auto"
       >
         <div className="flex-1" /> {/* Spacer to push content to bottom */}
-        {scoreHistory.map((score, index) => {
-          const nextScore = scoreHistory[index + 1];
+        {scoreHistory.map((score) => (
+          <div
+            key={score.timestamp}
+            className="w-full h-6 flex relative shrink-0"
+          >
+            {/* Handout line - show under the losing player's score */}
+            {score.isHandout && (
+              <div className="absolute -bottom-0 left-1/3 right-1/3 h-[1px] bg-black" />
+            )}
 
-          return (
-            <div
-              key={score.timestamp}
-              className="w-full h-6 flex relative shrink-0"
-            >
-              {/* Handout line - show under the losing player's score */}
-              {score.isHandout && (
-                <div className="absolute -bottom-0 left-1/3 right-1/3 h-[1px] bg-black" />
+            {/* Left side (Player 1) */}
+            <div className="flex-1 flex justify-end pr-2">
+              {score.type === "initial" ? (
+                <span className="text-sm">0{score.initialServeSide}</span>
+              ) : score.type === "let" && score.player === "player1" ? (
+                <span className="text-sm text-blue-600">Let</span>
+              ) : score.type === "stroke" && score.player === "player1" ? (
+                <span className="text-sm">
+                  <span className="text-red-600">Stroke </span>
+                  {score.score}
+                  {score.serveSide}
+                </span>
+              ) : score.type === "nolet" && score.player === "player1" ? (
+                <span className="text-sm text-gray-500">No Let</span>
+              ) : (
+                score.player === "player1" && (
+                  <span
+                    className={`text-sm ${score.isLet ? "text-blue-600" : ""}`}
+                  >
+                    {score.score}
+                    {score.serveSide}
+                  </span>
+                )
               )}
-
-              {/* Left side (Player 1) */}
-              <div className="flex-1 flex justify-end pr-2">
-                {score.type === "initial" ? (
-                  <span className="text-sm">0{score.initialServeSide}</span>
-                ) : (
-                  score.player === "player1" && (
-                    <span className="text-sm">
-                      {score.score}
-                      {score.serveSide}
-                    </span>
-                  )
-                )}
-              </div>
-
-              {/* Right side (Player 2) */}
-              <div className="flex-1 flex pl-2">
-                {score.type === "initial" ? (
-                  <span className="text-sm">0</span>
-                ) : (
-                  score.player === "player2" && (
-                    <span className="text-sm">
-                      {score.score}
-                      {score.serveSide}
-                    </span>
-                  )
-                )}
-              </div>
             </div>
-          );
-        })}
+
+            {/* Right side (Player 2) */}
+            <div className="flex-1 flex pl-2">
+              {score.type === "initial" ? (
+                <span className="text-sm">0</span>
+              ) : score.type === "let" && score.player === "player2" ? (
+                <span className="text-sm text-blue-600">Let</span>
+              ) : score.type === "stroke" && score.player === "player2" ? (
+                <span className="text-sm">
+                  <span className="text-red-600">Stroke </span>
+                  {score.score}
+                  {score.serveSide}
+                </span>
+              ) : score.type === "nolet" && score.player === "player2" ? (
+                <span className="text-sm text-gray-500">No Let</span>
+              ) : (
+                score.player === "player2" && (
+                  <span
+                    className={`text-sm ${score.isLet ? "text-blue-600" : ""}`}
+                  >
+                    {score.score}
+                    {score.serveSide}
+                  </span>
+                )
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
