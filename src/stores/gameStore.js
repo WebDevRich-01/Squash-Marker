@@ -534,6 +534,42 @@ const useGameStore = create((set, get) => ({
         },
       ],
     })),
+
+  initializeGame: (settings) =>
+    set(() => ({
+      matchSettings: {
+        pointsToWin: settings.pointsToWin,
+        clearPoints: settings.clearPoints,
+        bestOf: settings.bestOf,
+      },
+      player1: {
+        name: settings.player1Name || "Player 1",
+        color: settings.player1Color || "border-red-500",
+        score: 0,
+        serving: true,
+        serveSide: "R",
+      },
+      player2: {
+        name: settings.player2Name || "Player 2",
+        color: settings.player2Color || "border-blue-500",
+        score: 0,
+        serving: false,
+        serveSide: "R",
+      },
+      currentGame: 1,
+      gameScores: [],
+      matchWon: false,
+      scoreHistory: [
+        {
+          type: "initial",
+          player1Score: 0,
+          player2Score: 0,
+          initialServeSide: "R",
+          servingPlayer: "player1",
+          timestamp: getUniqueTimestamp(),
+        },
+      ],
+    })),
 }));
 
 export default useGameStore;

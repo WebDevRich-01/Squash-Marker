@@ -7,20 +7,16 @@ export default function GameSetupScreen({ onStartMatch }) {
     player2Name: "",
     player1Color: "border-red-500",
     player2Color: "border-blue-500",
+    pointsToWin: 15,
+    clearPoints: 2,
+    bestOf: 5,
   });
 
-  const setPlayerDetails = useGameStore((state) => state.setPlayerDetails);
+  const initializeGame = useGameStore((state) => state.initializeGame);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setPlayerDetails(1, {
-      name: settings.player1Name,
-      color: settings.player1Color,
-    });
-    setPlayerDetails(2, {
-      name: settings.player2Name,
-      color: settings.player2Color,
-    });
+    initializeGame(settings);
     onStartMatch();
   };
 
@@ -110,6 +106,54 @@ export default function GameSetupScreen({ onStartMatch }) {
                   </option>
                 ))}
               </select>
+            </div>
+          </div>
+
+          {/* Match Settings */}
+          <div className="space-y-4">
+            <h3 className="font-semibold">Match Settings</h3>
+            <div>
+              <label className="block mb-1">Points to Win</label>
+              <select
+                value={settings.pointsToWin}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    pointsToWin: Number(e.target.value),
+                  })
+                }
+                className="w-full p-2 border rounded"
+              >
+                <option value={11}>11 Points</option>
+                <option value={15}>15 Points</option>
+              </select>
+            </div>
+            <div>
+              <label className="block mb-1">Match Format</label>
+              <select
+                value={settings.bestOf}
+                onChange={(e) =>
+                  setSettings({ ...settings, bestOf: Number(e.target.value) })
+                }
+                className="w-full p-2 border rounded"
+              >
+                <option value={3}>Best of 3</option>
+                <option value={5}>Best of 5</option>
+              </select>
+            </div>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={settings.clearPoints === 2}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    clearPoints: e.target.checked ? 2 : 1,
+                  })
+                }
+                className="mr-2"
+              />
+              <label>Win by 2 clear points</label>
             </div>
           </div>
 
