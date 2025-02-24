@@ -1,19 +1,49 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useGameStore from "../stores/gameStore";
 import ScoreColumns from "./ScoreColumns";
 import PlayerButton from "./PlayerButton";
 import LetDecisionModal from "./LetDecisionModal";
+import GameWinModal from "./GameWinModal";
 
 export default function GameScreen() {
   const [letModalOpen, setLetModalOpen] = useState(false);
   const [letCallingPlayer, setLetCallingPlayer] = useState(null);
+  const [gameWinModalOpen, setGameWinModalOpen] = useState(false);
+
   const {
     player1,
     player2,
+    currentGame,
+    gameScores,
+    matchWon,
     undoLastPoint,
     toggleServeSide,
     handleLetDecision,
+    startNextGame,
+    checkGameWin,
   } = useGameStore();
+
+  // Check for game wins
+  useEffect(() => {
+    const winner = checkGameWin();
+    if (winner) {
+      setGameWinModalOpen(true);
+    }
+  }, [player1.score, player2.score, checkGameWin]);
+
+  const handleStartNext = () => {
+    startNextGame();
+    setGameWinModalOpen(false);
+  };
+
+  const getGameScoreDisplay = () => {
+    if (!gameScores || gameScores.length === 0) return "(0-0)";
+
+    const player1Wins = gameScores.filter((s) => s.player1 > s.player2).length;
+    const player2Wins = gameScores.filter((s) => s.player2 > s.player1).length;
+
+    return `(${player1Wins}-${player2Wins})`;
+  };
 
   const handleLetButtonClick = (playerNum) => {
     setLetCallingPlayer(playerNum);
@@ -31,7 +61,9 @@ export default function GameScreen() {
       {/* Header */}
       <div className="flex justify-between items-center p-4 border-b shrink-0">
         <button className="p-2">&larr;</button>
-        <div>Game 1 (0-0)</div>
+        <div>
+          Game {currentGame} {getGameScoreDisplay()}
+        </div>
         <button className="p-2">&times;</button>
       </div>
 
@@ -96,6 +128,19 @@ export default function GameScreen() {
       >
         Undo
       </button>
+
+      {gameWinModalOpen && (
+        <GameWinModal
+          winningPlayer={checkGameWin()}
+          gameNumber={currentGame + 1}
+          matchWon={matchWon}
+          gameScores={gameScores}
+          onStartNext={handleStartNext}
+          onFinishMatch={() => {
+            /* Handle return to menu */
+          }}
+        />
+      )}
 
       {letModalOpen && (
         <LetDecisionModal

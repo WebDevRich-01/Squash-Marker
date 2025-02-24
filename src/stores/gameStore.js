@@ -1,5 +1,9 @@
 import { create } from "zustand";
 
+const getUniqueTimestamp = () => {
+  return Date.now() * 1000 + Math.floor(Math.random() * 1000);
+};
+
 const useGameStore = create((set, get) => ({
   // Match settings
   matchSettings: {
@@ -7,6 +11,11 @@ const useGameStore = create((set, get) => ({
     clearPoints: 2,
     bestOf: 5,
   },
+
+  // Match state
+  currentGame: 1,
+  gameScores: [], // [{player1: 15, player2: 13}, ...]
+  matchWon: false,
 
   // Current game state
   gameNumber: 1,
@@ -39,7 +48,7 @@ const useGameStore = create((set, get) => ({
       player2Score: 0,
       initialServeSide: "R",
       servingPlayer: "player1",
-      timestamp: Date.now(),
+      timestamp: getUniqueTimestamp(),
     },
   ],
 
@@ -54,6 +63,27 @@ const useGameStore = create((set, get) => ({
       },
     })),
 
+  // Add back checkGameWin for the modal
+  checkGameWin: () => {
+    const state = get();
+    const { pointsToWin, clearPoints } = state.matchSettings;
+    const { player1, player2 } = state;
+
+    if (
+      player1.score >= pointsToWin &&
+      player1.score - player2.score >= clearPoints
+    ) {
+      return 1;
+    }
+    if (
+      player2.score >= pointsToWin &&
+      player2.score - player1.score >= clearPoints
+    ) {
+      return 2;
+    }
+    return 0;
+  },
+
   addPoint: (playerNum) =>
     set((state) => {
       const player = `player${playerNum}`;
@@ -64,28 +94,75 @@ const useGameStore = create((set, get) => ({
       const newHistory = [...state.scoreHistory];
 
       if (isHandout) {
-        // Add the losing player's score first
         newHistory.push({
           type: "score",
           player: opponent,
           score: state[opponent].score,
           serveSide: state[opponent].serveSide,
           isHandout: true,
-          timestamp: Date.now(),
-        });
-      } else if (state[player].score > 0) {
-        // Only add winning player's score if not a handout and not the first point
-        newHistory.push({
-          type: "score",
-          player,
-          score: state[player].score,
-          serveSide: state[player].serveSide,
-          isHandout: false,
-          timestamp: Date.now(),
+          timestamp: getUniqueTimestamp(),
         });
       }
 
+      newHistory.push({
+        type: "score",
+        player,
+        score: newScore,
+        serveSide: isHandout
+          ? "R"
+          : state[player].serveSide === "R"
+          ? "L"
+          : "R",
+        timestamp: getUniqueTimestamp(),
+      });
+
+      // Check for win conditions
+      const { pointsToWin, clearPoints } = state.matchSettings;
+      const newPlayerScore = newScore;
+      const opponentScore = state[opponent].score;
+
+      const isWinningPoint =
+        newPlayerScore >= pointsToWin &&
+        newPlayerScore - opponentScore >= clearPoints;
+
+      if (isWinningPoint) {
+        const newGameScores = [
+          ...state.gameScores,
+          {
+            player1: playerNum === 1 ? newPlayerScore : opponentScore,
+            player2: playerNum === 2 ? newPlayerScore : opponentScore,
+          },
+        ];
+
+        const playerWins = newGameScores.filter((s) =>
+          playerNum === 1 ? s.player1 > s.player2 : s.player2 > s.player1
+        ).length;
+        const matchWon = playerWins > state.matchSettings.bestOf / 2;
+
+        return {
+          ...state,
+          [player]: {
+            ...state[player],
+            score: newScore,
+            serving: true,
+            serveSide: isHandout
+              ? "R"
+              : state[player].serveSide === "R"
+              ? "L"
+              : "R",
+          },
+          [opponent]: {
+            ...state[opponent],
+            serving: false,
+          },
+          scoreHistory: newHistory,
+          gameScores: newGameScores,
+          matchWon,
+        };
+      }
+
       return {
+        ...state,
         [player]: {
           ...state[player],
           score: newScore,
@@ -138,7 +215,7 @@ const useGameStore = create((set, get) => ({
           player2Score: 0,
           initialServeSide: "R",
           servingPlayer: "player1",
-          timestamp: Date.now(),
+          timestamp: getUniqueTimestamp(),
         },
       ],
     })),
@@ -246,7 +323,7 @@ const useGameStore = create((set, get) => ({
         player,
         score: state[player].score,
         serveSide: state[player].serving ? state[player].serveSide : null,
-        timestamp: Date.now(),
+        timestamp: getUniqueTimestamp(),
       });
 
       return {
@@ -269,13 +346,13 @@ const useGameStore = create((set, get) => ({
             score: state[state[opponent].serving ? opponent : player].score,
             serveSide:
               state[state[opponent].serving ? opponent : player].serveSide,
-            timestamp: Date.now() - 1,
+            timestamp: getUniqueTimestamp() - 1,
           });
           // Add "Let" on next line
           newHistory.push({
             type: "let",
             player,
-            timestamp: Date.now(),
+            timestamp: getUniqueTimestamp(),
           });
           return { scoreHistory: newHistory };
         }
@@ -290,13 +367,13 @@ const useGameStore = create((set, get) => ({
               player: opponent,
               score: state[opponent].score,
               serveSide: state[opponent].serveSide,
-              timestamp: Date.now() - 2,
+              timestamp: getUniqueTimestamp() - 2,
             });
             // Add "Stroke" before the handout line
             newHistory.push({
               type: "stroke",
               player,
-              timestamp: Date.now() - 1,
+              timestamp: getUniqueTimestamp() - 1,
               isHandout: true, // This will trigger the handout line
             });
           } else {
@@ -307,14 +384,14 @@ const useGameStore = create((set, get) => ({
                 player,
                 score: state[player].score,
                 serveSide: state[player].serveSide,
-                timestamp: Date.now() - 1,
+                timestamp: getUniqueTimestamp() - 1,
               });
             }
             // Add "Stroke" on next line
             newHistory.push({
               type: "stroke",
               player,
-              timestamp: Date.now(),
+              timestamp: getUniqueTimestamp(),
             });
           }
 
@@ -348,7 +425,7 @@ const useGameStore = create((set, get) => ({
               player,
               score: state[player].score,
               serveSide: state[player].serveSide,
-              timestamp: Date.now() - 2,
+              timestamp: getUniqueTimestamp() - 2,
             });
 
             // Add "No Let" with handout flag
@@ -356,14 +433,14 @@ const useGameStore = create((set, get) => ({
               type: "nolet",
               player,
               isHandout: true,
-              timestamp: Date.now() - 1,
+              timestamp: getUniqueTimestamp() - 1,
             });
           } else {
             // For non-serving player, just add "No Let"
             newHistory.push({
               type: "nolet",
               player,
-              timestamp: Date.now() - 1,
+              timestamp: getUniqueTimestamp() - 1,
             });
 
             // Add opponent's score if they had points
@@ -373,7 +450,7 @@ const useGameStore = create((set, get) => ({
                 player: opponent,
                 score: state[opponent].score,
                 serveSide: state[opponent].serveSide,
-                timestamp: Date.now(),
+                timestamp: getUniqueTimestamp(),
               });
             }
           }
@@ -401,6 +478,62 @@ const useGameStore = create((set, get) => ({
           return state;
       }
     }),
+
+  // Record game result and check for match win
+  recordGameWin: (winningPlayer) =>
+    set((state) => {
+      console.log("Recording win for player", winningPlayer, "Current state:", {
+        currentGame: state.currentGame,
+        gameScores: state.gameScores,
+        player1Score: state.player1.score,
+        player2Score: state.player2.score,
+      });
+
+      const newGameScores = [
+        ...state.gameScores,
+        {
+          player1: state.player1.score,
+          player2: state.player2.score,
+        },
+      ];
+
+      console.log("New game scores:", newGameScores);
+
+      return {
+        ...state,
+        gameScores: newGameScores,
+        matchWon: false, // We'll handle match win check separately
+      };
+    }),
+
+  // Start next game
+  startNextGame: () =>
+    set((state) => ({
+      ...state,
+      currentGame: state.currentGame + 1,
+      player1: {
+        ...state.player1,
+        score: 0,
+        serving: true,
+        serveSide: "R",
+      },
+      player2: {
+        ...state.player2,
+        score: 0,
+        serving: false,
+        serveSide: "R",
+      },
+      scoreHistory: [
+        {
+          type: "initial",
+          player1Score: 0,
+          player2Score: 0,
+          initialServeSide: "R",
+          servingPlayer: "player1",
+          timestamp: getUniqueTimestamp(),
+        },
+      ],
+    })),
 }));
 
 export default useGameStore;
