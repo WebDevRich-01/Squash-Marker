@@ -129,6 +129,7 @@ const useGameStore = create((set, get) => ({
         newPlayerScore - opponentScore >= clearPoints;
 
       if (isWinningPoint) {
+        // Only record the game score here, not in recordGameWin
         const newGameScores = [
           ...state.gameScores,
           {
@@ -453,19 +454,10 @@ const useGameStore = create((set, get) => ({
         player2Score: state.player2.score,
       });
 
-      const newGameScores = [
-        ...state.gameScores,
-        {
-          player1: state.player1.score,
-          player2: state.player2.score,
-        },
-      ];
-
-      console.log("New game scores:", newGameScores);
-
+      // Don't modify gameScores here, it's already handled in addPoint
+      // Just return the state with matchWon set to false
       return {
         ...state,
-        gameScores: newGameScores,
         matchWon: false, // We'll handle match win check separately
       };
     }),
@@ -568,15 +560,7 @@ const useGameStore = create((set, get) => ({
   // Updated game completion handler
   handleGameCompletion: async () => {
     const state = get();
-    const { player1, player2, currentGame } = state;
-
-    // Save current game score
-    set((state) => ({
-      gameScores: [
-        ...state.gameScores,
-        { player1: player1.score, player2: player2.score },
-      ],
-    }));
+    const { currentGame } = state;
 
     // Check if match is won
     const matchWon = get().checkMatchWin();
@@ -584,15 +568,15 @@ const useGameStore = create((set, get) => ({
       set({ matchWon: true });
       const savedSuccessfully = await get().saveCompletedMatch();
       if (!savedSuccessfully) {
-        // Match is still won but save failed
         console.error("Match save failed");
       }
     }
 
     // Start next game if match isn't over
     if (!matchWon) {
+      // Reset scores but DON'T increment game number here
+      // The game number will be incremented in startNextGame
       set((state) => ({
-        currentGame: currentGame + 1,
         player1: { ...state.player1, score: 0 },
         player2: { ...state.player2, score: 0 },
       }));
