@@ -10,6 +10,7 @@ export default function GameSetupScreen({ onStartMatch }) {
     pointsToWin: 15,
     clearPoints: 2,
     bestOf: 5,
+    player1Serving: true,
   });
 
   const initializeGame = useGameStore((state) => state.initializeGame);
@@ -50,6 +51,21 @@ export default function GameSetupScreen({ onStartMatch }) {
                 placeholder="Enter name"
               />
             </div>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={settings.player1Serving}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    player1Serving: e.target.checked,
+                    player2Serving: !e.target.checked,
+                  })
+                }
+                className="mr-2"
+              />
+              <label>Serves First</label>
+            </div>
             <div>
               <label className="block mb-1">Color</label>
               <select
@@ -86,6 +102,21 @@ export default function GameSetupScreen({ onStartMatch }) {
                 className="w-full p-2 border rounded"
                 placeholder="Enter name"
               />
+            </div>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={!settings.player1Serving}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    player1Serving: !e.target.checked,
+                    player2Serving: e.target.checked,
+                  })
+                }
+                className="mr-2"
+              />
+              <label>Serves First</label>
             </div>
             <div>
               <label className="block mb-1">Color</label>
