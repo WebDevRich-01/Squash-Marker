@@ -23,6 +23,11 @@ export default function ScoreColumns() {
     );
   }
 
+  // Filter out the initial score entry
+  const filteredHistory = scoreHistory.filter(
+    (score) => score.type !== "initial"
+  );
+
   return (
     <div className="flex-1 flex min-h-0 relative">
       {/* Center dividing line */}
@@ -34,7 +39,7 @@ export default function ScoreColumns() {
         className="absolute inset-0 flex flex-col overflow-y-auto"
       >
         <div className="flex-1" /> {/* Spacer to push content to bottom */}
-        {scoreHistory.map((score) => (
+        {filteredHistory.map((score) => (
           <div
             key={score.timestamp}
             className="w-full h-6 flex relative shrink-0"
@@ -46,9 +51,7 @@ export default function ScoreColumns() {
 
             {/* Left side (Player 1) */}
             <div className="flex-1 flex justify-end pr-2">
-              {score.type === "initial" ? (
-                <span className="text-sm">0{score.initialServeSide}</span>
-              ) : score.type === "let" && score.player === "player1" ? (
+              {score.type === "let" && score.player === "player1" ? (
                 <span className="text-sm text-blue-600">Let</span>
               ) : score.type === "stroke" && score.player === "player1" ? (
                 <span className="text-sm">
@@ -72,9 +75,7 @@ export default function ScoreColumns() {
 
             {/* Right side (Player 2) */}
             <div className="flex-1 flex pl-2">
-              {score.type === "initial" ? (
-                <span className="text-sm">0</span>
-              ) : score.type === "let" && score.player === "player2" ? (
+              {score.type === "let" && score.player === "player2" ? (
                 <span className="text-sm text-blue-600">Let</span>
               ) : score.type === "stroke" && score.player === "player2" ? (
                 <span className="text-sm">

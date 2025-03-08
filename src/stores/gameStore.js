@@ -108,8 +108,6 @@ const useGameStore = create((set, get) => ({
           isHandout: true,
           timestamp: getUniqueTimestamp(),
         });
-
-        // Don't add any score for the new serving player below the handout line
       } else {
         // For normal points (no handout), add the previous score
         newHistory.push({
