@@ -99,6 +99,7 @@ const useGameStore = create((set, get) => ({
       const newHistory = [...state.scoreHistory];
 
       if (isHandout) {
+        // Only add the losing player's score above the handout line
         newHistory.push({
           type: "score",
           player: opponent,
@@ -107,19 +108,18 @@ const useGameStore = create((set, get) => ({
           isHandout: true,
           timestamp: getUniqueTimestamp(),
         });
-      }
 
-      newHistory.push({
-        type: "score",
-        player,
-        score: state[player].score,
-        serveSide: isHandout
-          ? "R"
-          : state[player].serveSide === "R"
-          ? "L"
-          : "R",
-        timestamp: getUniqueTimestamp(),
-      });
+        // Don't add any score for the new serving player below the handout line
+      } else {
+        // For normal points (no handout), add the previous score
+        newHistory.push({
+          type: "score",
+          player,
+          score: state[player].score,
+          serveSide: state[player].serveSide === "R" ? "L" : "R",
+          timestamp: getUniqueTimestamp(),
+        });
+      }
 
       // Check for win conditions
       const { pointsToWin, clearPoints } = state.matchSettings;
@@ -354,7 +354,7 @@ const useGameStore = create((set, get) => ({
           const newScore = state[player].score + 1;
 
           if (isHandout) {
-            // Add the previous score with handout flag
+            // Only add the losing player's score above the handout line
             newHistory.push({
               type: "score",
               player: opponent,
@@ -363,20 +363,17 @@ const useGameStore = create((set, get) => ({
               isHandout: true,
               timestamp: getUniqueTimestamp(),
             });
+            // Don't add any score for the new serving player
+          } else {
+            // For normal points (no handout), add the previous score
+            newHistory.push({
+              type: "score",
+              player,
+              score: state[player].score,
+              serveSide: state[player].serveSide === "R" ? "L" : "R",
+              timestamp: getUniqueTimestamp(),
+            });
           }
-
-          // Add the player's previous score
-          newHistory.push({
-            type: "score",
-            player,
-            score: state[player].score,
-            serveSide: isHandout
-              ? "R"
-              : state[player].serveSide === "R"
-              ? "L"
-              : "R",
-            timestamp: getUniqueTimestamp(),
-          });
 
           return {
             [player]: {
@@ -403,7 +400,7 @@ const useGameStore = create((set, get) => ({
           const newScore = state[opponent].score + 1;
 
           if (willHandout) {
-            // Add the previous score with handout flag
+            // Only add the losing player's score above the handout line
             newHistory.push({
               type: "score",
               player,
@@ -412,20 +409,17 @@ const useGameStore = create((set, get) => ({
               isHandout: true,
               timestamp: getUniqueTimestamp(),
             });
+            // Don't add any score for the new serving player
+          } else {
+            // For normal points (no handout), add the previous score
+            newHistory.push({
+              type: "score",
+              player: opponent,
+              score: state[opponent].score,
+              serveSide: state[opponent].serveSide === "R" ? "L" : "R",
+              timestamp: getUniqueTimestamp(),
+            });
           }
-
-          // Add the opponent's previous score
-          newHistory.push({
-            type: "score",
-            player: opponent,
-            score: state[opponent].score,
-            serveSide: willHandout
-              ? "R"
-              : state[opponent].serveSide === "R"
-              ? "L"
-              : "R",
-            timestamp: getUniqueTimestamp(),
-          });
 
           return {
             [opponent]: {
