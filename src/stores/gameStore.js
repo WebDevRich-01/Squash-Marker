@@ -344,66 +344,44 @@ const useGameStore = create((set, get) => ({
 
       switch (decision) {
         case "let": {
-          // Add current score first
-          newHistory.push({
-            type: "score",
-            player: state[opponent].serving ? opponent : player,
-            score: state[state[opponent].serving ? opponent : player].score,
-            serveSide:
-              state[state[opponent].serving ? opponent : player].serveSide,
-            timestamp: getUniqueTimestamp() - 1,
-          });
-          // Add "Let" on next line
-          newHistory.push({
-            type: "let",
-            player,
-            timestamp: getUniqueTimestamp(),
-          });
-          return { scoreHistory: newHistory };
+          // For a let, no score changes, just replay the rally
+          // No need to add anything to score history
+          return state; // Return unchanged state
         }
 
         case "stroke": {
           const isHandout = !state[player].serving;
+          const newScore = state[player].score + 1;
 
           if (isHandout) {
-            // Add losing player's score first
+            // Add the previous score with handout flag
             newHistory.push({
               type: "score",
               player: opponent,
               score: state[opponent].score,
               serveSide: state[opponent].serveSide,
-              timestamp: getUniqueTimestamp() - 2,
-            });
-            // Add "Stroke" before the handout line
-            newHistory.push({
-              type: "stroke",
-              player,
-              timestamp: getUniqueTimestamp() - 1,
-              isHandout: true, // This will trigger the handout line
-            });
-          } else {
-            // Add current score first if not a handout
-            if (state[player].score > 0) {
-              newHistory.push({
-                type: "score",
-                player,
-                score: state[player].score,
-                serveSide: state[player].serveSide,
-                timestamp: getUniqueTimestamp() - 1,
-              });
-            }
-            // Add "Stroke" on next line
-            newHistory.push({
-              type: "stroke",
-              player,
+              isHandout: true,
               timestamp: getUniqueTimestamp(),
             });
           }
 
+          // Add the player's previous score
+          newHistory.push({
+            type: "score",
+            player,
+            score: state[player].score,
+            serveSide: isHandout
+              ? "R"
+              : state[player].serveSide === "R"
+              ? "L"
+              : "R",
+            timestamp: getUniqueTimestamp(),
+          });
+
           return {
             [player]: {
               ...state[player],
-              score: state[player].score + 1,
+              score: newScore,
               serving: true,
               serveSide: isHandout
                 ? "R"
@@ -422,48 +400,37 @@ const useGameStore = create((set, get) => ({
         case "nolet": {
           const isServingPlayerCalling = state[player].serving;
           const willHandout = isServingPlayerCalling;
+          const newScore = state[opponent].score + 1;
 
           if (willHandout) {
-            // Add serving player's current score first
+            // Add the previous score with handout flag
             newHistory.push({
               type: "score",
               player,
               score: state[player].score,
               serveSide: state[player].serveSide,
-              timestamp: getUniqueTimestamp() - 2,
-            });
-
-            // Add "No Let" with handout flag
-            newHistory.push({
-              type: "nolet",
-              player,
               isHandout: true,
-              timestamp: getUniqueTimestamp() - 1,
+              timestamp: getUniqueTimestamp(),
             });
-          } else {
-            // For non-serving player, just add "No Let"
-            newHistory.push({
-              type: "nolet",
-              player,
-              timestamp: getUniqueTimestamp() - 1,
-            });
-
-            // Add opponent's score if they had points
-            if (state[opponent].score > 0) {
-              newHistory.push({
-                type: "score",
-                player: opponent,
-                score: state[opponent].score,
-                serveSide: state[opponent].serveSide,
-                timestamp: getUniqueTimestamp(),
-              });
-            }
           }
+
+          // Add the opponent's previous score
+          newHistory.push({
+            type: "score",
+            player: opponent,
+            score: state[opponent].score,
+            serveSide: willHandout
+              ? "R"
+              : state[opponent].serveSide === "R"
+              ? "L"
+              : "R",
+            timestamp: getUniqueTimestamp(),
+          });
 
           return {
             [opponent]: {
               ...state[opponent],
-              score: state[opponent].score + 1,
+              score: newScore,
               serving: true,
               serveSide: willHandout
                 ? "R"
