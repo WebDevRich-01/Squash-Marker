@@ -112,7 +112,7 @@ const useGameStore = create((set, get) => ({
       newHistory.push({
         type: "score",
         player,
-        score: newScore,
+        score: state[player].score,
         serveSide: isHandout
           ? "R"
           : state[player].serveSide === "R"
@@ -642,6 +642,30 @@ const useGameStore = create((set, get) => ({
 
   // Add method to clear error
   clearSaveError: () => set({ saveError: null }),
+
+  checkMatchWin: () => {
+    const state = get();
+    const { bestOf } = state.matchSettings;
+    const { gameScores } = state;
+
+    // Calculate wins for each player
+    const player1Wins = gameScores.filter(
+      (score) => score.player1 > score.player2
+    ).length;
+    const player2Wins = gameScores.filter(
+      (score) => score.player2 > score.player1
+    ).length;
+
+    // Check if either player has won more than half of the total games
+    if (player1Wins > bestOf / 2) {
+      return 1;
+    }
+    if (player2Wins > bestOf / 2) {
+      return 2;
+    }
+
+    return 0; // No winner yet
+  },
 }));
 
 export default useGameStore;

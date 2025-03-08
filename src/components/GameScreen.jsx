@@ -9,6 +9,7 @@ export default function GameScreen() {
   const [letModalOpen, setLetModalOpen] = useState(false);
   const [letCallingPlayer, setLetCallingPlayer] = useState(null);
   const [gameWinModalOpen, setGameWinModalOpen] = useState(false);
+  const [winningPlayer, setWinningPlayer] = useState(null);
 
   const {
     player1,
@@ -24,19 +25,36 @@ export default function GameScreen() {
     handleGameCompletion,
   } = useGameStore();
 
-  // Check for game wins
+  // Check for game wins without trying to save to backend
   useEffect(() => {
     const winner = checkGameWin();
     if (winner) {
-      handleGameCompletion().then(() => {
-        setGameWinModalOpen(true);
-      });
+      console.log("Game won by player", winner);
+
+      // Store the winner in state to avoid recalculating
+      setWinningPlayer(winner);
+
+      // Skip the API call for now and just show the modal
+      try {
+        // If handleGameCompletion is synchronous or returns a non-promise
+        handleGameCompletion();
+      } catch (error) {
+        console.error("Error in game completion:", error);
+        // Continue showing the modal even if there's an error
+      }
+
+      // Always show the modal
+      setGameWinModalOpen(true);
     }
   }, [player1.score, player2.score, checkGameWin, handleGameCompletion]);
 
   const handleStartNext = () => {
     startNextGame();
     setGameWinModalOpen(false);
+  };
+
+  const handleFinishMatch = () => {
+    window.location.reload();
   };
 
   const getGameScoreDisplay = () => {
@@ -132,19 +150,19 @@ export default function GameScreen() {
         Undo
       </button>
 
+      {/* Game win modal */}
       {gameWinModalOpen && (
         <GameWinModal
-          winningPlayer={checkGameWin()}
+          winningPlayer={winningPlayer}
           gameNumber={currentGame + 1}
           matchWon={matchWon}
           gameScores={gameScores}
           onStartNext={handleStartNext}
-          onFinishMatch={() => {
-            /* Handle return to menu */
-          }}
+          onFinishMatch={handleFinishMatch}
         />
       )}
 
+      {/* Let decision modal */}
       {letModalOpen && (
         <LetDecisionModal
           playerNum={letCallingPlayer}
