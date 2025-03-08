@@ -1,24 +1,36 @@
 import { useState } from "react";
 import useGameStore from "../stores/gameStore";
 
-export default function GameSetupScreen({ onStartMatch }) {
-  const [settings, setSettings] = useState({
-    player1Name: "",
-    player2Name: "",
-    player1Color: "border-red-500",
-    player2Color: "border-blue-500",
-    pointsToWin: 15,
-    clearPoints: 2,
-    bestOf: 5,
-    player1Serving: true,
-  });
+export default function GameSetupScreen({
+  initialSettings,
+  onStartMatch,
+  onReturnToMatch,
+  isEditing,
+}) {
+  const [settings, setSettings] = useState(
+    initialSettings || {
+      player1Name: "",
+      player2Name: "",
+      player1Color: "border-red-500",
+      player2Color: "border-blue-500",
+      pointsToWin: 15,
+      clearPoints: 2,
+      bestOf: 5,
+      player1Serving: true,
+    }
+  );
 
   const initializeGame = useGameStore((state) => state.initializeGame);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    initializeGame(settings);
-    onStartMatch();
+
+    if (isEditing) {
+      onReturnToMatch(settings);
+    } else {
+      initializeGame(settings);
+      onStartMatch();
+    }
   };
 
   const colorOptions = [
@@ -34,7 +46,9 @@ export default function GameSetupScreen({ onStartMatch }) {
   return (
     <div className="h-full flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-        <h2 className="text-2xl font-bold mb-6 text-center">Game Setup</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          {isEditing ? "Edit Game Settings" : "Game Setup"}
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Player 1 Settings */}
           <div className="space-y-4">
@@ -192,7 +206,7 @@ export default function GameSetupScreen({ onStartMatch }) {
             type="submit"
             className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
-            Start Match
+            {isEditing ? "Return to Match" : "Start Match"}
           </button>
         </form>
       </div>

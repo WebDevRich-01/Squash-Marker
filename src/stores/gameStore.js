@@ -609,6 +609,31 @@ const useGameStore = create((set, get) => ({
 
     return 0; // No winner yet
   },
+
+  // Add this method to the store
+  updateGameSettings: (settings) => {
+    set((state) => ({
+      matchSettings: {
+        ...state.matchSettings,
+        pointsToWin: settings.pointsToWin,
+        clearPoints: settings.clearPoints,
+        bestOf: settings.bestOf,
+      },
+      player1: {
+        ...state.player1,
+        name: settings.player1Name,
+        color: settings.player1Color,
+        // Don't update score or serving status
+      },
+      player2: {
+        ...state.player2,
+        name: settings.player2Name,
+        color: settings.player2Color,
+        // Don't update score or serving status
+      },
+      // Don't reset currentGame, gameScores, or matchWon
+    }));
+  },
 }));
 
 export default useGameStore;

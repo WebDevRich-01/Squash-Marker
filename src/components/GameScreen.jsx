@@ -5,7 +5,7 @@ import PlayerButton from "./PlayerButton";
 import LetDecisionModal from "./LetDecisionModal";
 import GameWinModal from "./GameWinModal";
 
-export default function GameScreen() {
+export default function GameScreen({ onBackToSetup }) {
   const [letModalOpen, setLetModalOpen] = useState(false);
   const [letCallingPlayer, setLetCallingPlayer] = useState(null);
   const [gameWinModalOpen, setGameWinModalOpen] = useState(false);
@@ -81,7 +81,9 @@ export default function GameScreen() {
     <div className="h-full flex flex-col overflow-hidden">
       {/* Header */}
       <div className="flex justify-between items-center p-4 border-b shrink-0">
-        <button className="p-2">&larr;</button>
+        <button className="p-2" onClick={onBackToSetup}>
+          &larr;
+        </button>
         <div>
           Game {currentGame} {getGameScoreDisplay()}
         </div>
