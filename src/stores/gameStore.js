@@ -209,9 +209,33 @@ const useGameStore = create((set, get) => ({
     }),
 
   resetGame: () =>
-    set((state) => ({
-      player1: { ...state.player1, score: 0, serving: true, serveSide: "R" },
-      player2: { ...state.player2, score: 0, serving: false, serveSide: "R" },
+    set(() => ({
+      // Match settings reset to defaults
+      matchSettings: {
+        pointsToWin: 15,
+        clearPoints: 2,
+        bestOf: 5,
+      },
+      // Reset player details
+      player1: {
+        name: "",
+        color: "border-red-500",
+        score: 0,
+        serving: true,
+        serveSide: "R",
+      },
+      player2: {
+        name: "",
+        color: "border-blue-500",
+        score: 0,
+        serving: false,
+        serveSide: "R",
+      },
+      // Reset match state
+      currentGame: 1,
+      gameScores: [],
+      matchWon: false,
+      // Reset score history
       scoreHistory: [
         {
           type: "initial",
@@ -222,6 +246,9 @@ const useGameStore = create((set, get) => ({
           timestamp: getUniqueTimestamp(),
         },
       ],
+      // Reset error states
+      saveError: null,
+      isSaving: false,
     })),
 
   undoLastPoint: () =>

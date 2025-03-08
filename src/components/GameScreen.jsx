@@ -10,6 +10,7 @@ export default function GameScreen({ onBackToSetup }) {
   const [letCallingPlayer, setLetCallingPlayer] = useState(null);
   const [gameWinModalOpen, setGameWinModalOpen] = useState(false);
   const [winningPlayer, setWinningPlayer] = useState(null);
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
 
   const {
     player1,
@@ -23,6 +24,7 @@ export default function GameScreen({ onBackToSetup }) {
     startNextGame,
     checkGameWin,
     handleGameCompletion,
+    resetGame,
   } = useGameStore();
 
   // Check for game wins without trying to save to backend
@@ -77,6 +79,11 @@ export default function GameScreen({ onBackToSetup }) {
     setLetCallingPlayer(null);
   };
 
+  const handleCancelMatch = () => {
+    resetGame();
+    onBackToSetup();
+  };
+
   return (
     <div className="h-full flex flex-col overflow-hidden">
       {/* Header */}
@@ -87,7 +94,9 @@ export default function GameScreen({ onBackToSetup }) {
         <div>
           Game {currentGame} {getGameScoreDisplay()}
         </div>
-        <button className="p-2">&times;</button>
+        <button className="p-2" onClick={() => setCancelModalOpen(true)}>
+          &times;
+        </button>
       </div>
 
       {/* Score columns */}
@@ -174,6 +183,35 @@ export default function GameScreen({ onBackToSetup }) {
             setLetCallingPlayer(null);
           }}
         />
+      )}
+
+      {/* Cancel confirmation modal */}
+      {cancelModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-80 max-w-full">
+            <h2 className="text-xl font-bold mb-4 text-center">
+              Cancel Match?
+            </h2>
+            <p className="text-center mb-6">
+              Are you sure you want to cancel this match? All progress will be
+              lost.
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => handleCancelMatch()}
+                className="flex-1 p-3 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Yes, Cancel
+              </button>
+              <button
+                onClick={() => setCancelModalOpen(false)}
+                className="flex-1 p-3 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                No, Continue
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
