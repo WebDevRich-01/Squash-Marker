@@ -114,7 +114,7 @@ const useGameStore = create((set, get) => ({
           type: "score",
           player,
           score: state[player].score,
-          serveSide: state[player].serveSide === "R" ? "L" : "R",
+          serveSide: state[player].serveSide,
           timestamp: getUniqueTimestamp(),
         });
       }
@@ -368,7 +368,7 @@ const useGameStore = create((set, get) => ({
               type: "score",
               player,
               score: state[player].score,
-              serveSide: state[player].serveSide === "R" ? "L" : "R",
+              serveSide: state[player].serveSide,
               timestamp: getUniqueTimestamp(),
             });
           }
@@ -414,7 +414,7 @@ const useGameStore = create((set, get) => ({
               type: "score",
               player: opponent,
               score: state[opponent].score,
-              serveSide: state[opponent].serveSide === "R" ? "L" : "R",
+              serveSide: state[opponent].serveSide,
               timestamp: getUniqueTimestamp(),
             });
           }
