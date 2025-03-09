@@ -1,35 +1,72 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { api } from "../services/api";
+import api from "../utils/api";
 
-export default function MatchHistoryScreen() {
+export default function MatchHistoryScreen({ onBack }) {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
+    const fetchMatches = async () => {
+      try {
+        setLoading(true);
+        const response = await api.getMatches();
+        setMatches(response);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching matches:", err);
+        setError("Failed to load matches. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchMatches();
   }, []);
-
-  const fetchMatches = async () => {
-    try {
-      setLoading(true);
-      const data = await api.getMatches();
-      setMatches(data);
-      setError(null);
-    } catch (err) {
-      setError("Failed to load matches");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const filteredMatches = matches.filter(
     (match) =>
       match.player1Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       match.player2Name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return (
+      date.toLocaleDateString() +
+      " " +
+      date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    );
+  };
+
+  const getWinner = (match) => {
+    const player1Wins = match.gameScores.filter(
+      (game) => game.player1 > game.player2
+    ).length;
+    const player2Wins = match.gameScores.filter(
+      (game) => game.player2 > game.player1
+    ).length;
+
+    if (player1Wins > player2Wins) {
+      return match.player1Name;
+    } else if (player2Wins > player1Wins) {
+      return match.player2Name;
+    } else {
+      return "Tie";
+    }
+  };
+
+  const getScoreDisplay = (match) => {
+    const player1Wins = match.gameScores.filter(
+      (game) => game.player1 > game.player2
+    ).length;
+    const player2Wins = match.gameScores.filter(
+      (game) => game.player2 > game.player1
+    ).length;
+
+    return `${player1Wins}-${player2Wins}`;
+  };
 
   if (loading) {
     return (
@@ -44,7 +81,7 @@ export default function MatchHistoryScreen() {
       <div className="h-full flex flex-col items-center justify-center p-4">
         <div className="text-red-600 mb-4">{error}</div>
         <button
-          onClick={fetchMatches}
+          onClick={() => window.location.reload()}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           Retry
@@ -57,13 +94,18 @@ export default function MatchHistoryScreen() {
     <div className="h-full flex flex-col bg-gray-100">
       <div className="p-4 bg-white border-b">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold">Match History</h1>
-          <Link
-            to="/"
+          <div className="flex items-center">
+            <button onClick={onBack} className="p-2 mr-2">
+              &larr;
+            </button>
+            <h1 className="text-2xl font-bold">Match History</h1>
+          </div>
+          <button
+            onClick={onBack}
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
             New Match
-          </Link>
+          </button>
         </div>
 
         <input
@@ -88,28 +130,28 @@ export default function MatchHistoryScreen() {
                 className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow"
               >
                 <div className="flex justify-between items-center mb-2">
-                  <div className="font-semibold">
-                    {match.player1Name} vs {match.player2Name}
-                  </div>
+                  <div className="font-semibold">{formatDate(match.date)}</div>
                   <div className="text-sm text-gray-500">
-                    {new Date(match.date).toLocaleDateString()}
+                    {getScoreDisplay(match)}
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  {match.gameScores.map((score, index) => (
-                    <div key={index} className="flex justify-between text-sm">
-                      <span>Game {index + 1}:</span>
-                      <span className="font-mono">
-                        {score.player1} - {score.player2}
-                      </span>
+                <div className="flex justify-between items-center">
+                  <div className="flex-1">
+                    <div className="font-medium">{match.player1Name}</div>
+                    <div className="text-sm text-gray-500">
+                      {getWinner(match) === match.player1Name && "Winner"}
                     </div>
-                  ))}
-                </div>
+                  </div>
 
-                <div className="mt-2 pt-2 border-t text-sm text-gray-600">
-                  {match.matchSettings.pointsToWin} points, Best of{" "}
-                  {match.matchSettings.bestOf}
+                  <div className="text-lg font-bold mx-4">vs</div>
+
+                  <div className="flex-1 text-right">
+                    <div className="font-medium">{match.player2Name}</div>
+                    <div className="text-sm text-gray-500">
+                      {getWinner(match) === match.player2Name && "Winner"}
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}

@@ -6,6 +6,7 @@ export default function GameSetupScreen({
   onStartMatch,
   onReturnToMatch,
   isEditing,
+  onBack,
 }) {
   const [settings, setSettings] = useState(
     initialSettings || {
@@ -52,9 +53,14 @@ export default function GameSetupScreen({
   return (
     <div className="h-full flex items-center justify-center bg-gray-100 p-4 overflow-auto">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">
-          {isEditing ? "Edit Game Settings" : "Game Setup"}
-        </h2>
+        <div className="flex items-center mb-4">
+          <button onClick={onBack} className="p-2">
+            &larr;
+          </button>
+          <h2 className="text-2xl font-bold text-center flex-1">
+            {isEditing ? "Edit Game Settings" : "Game Setup"}
+          </h2>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Player 1 Settings Box */}
           <div className="border rounded-lg p-4 bg-gray-50 shadow-sm">
@@ -162,9 +168,14 @@ export default function GameSetupScreen({
                         })
                       }
                       className="w-full p-2 border rounded appearance-none pl-10"
+                      style={{ zIndex: 30 }}
                     >
                       {colorOptions.map((color) => (
-                        <option key={color.value} value={color.value}>
+                        <option
+                          key={color.value}
+                          value={color.value}
+                          className="p-2"
+                        >
                           {color.label}
                         </option>
                       ))}
@@ -219,6 +230,7 @@ export default function GameSetupScreen({
                       })
                     }
                     className="w-full p-2 border rounded"
+                    style={{ zIndex: 30 }}
                   >
                     <option value={11}>11 Points</option>
                     <option value={15}>15 Points</option>
@@ -253,6 +265,7 @@ export default function GameSetupScreen({
                     setSettings({ ...settings, bestOf: Number(e.target.value) })
                   }
                   className="w-full p-2 border rounded"
+                  style={{ zIndex: 30 }}
                 >
                   <option value={3}>Best of 3</option>
                   <option value={5}>Best of 5</option>

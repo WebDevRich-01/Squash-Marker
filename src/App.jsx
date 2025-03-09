@@ -1,11 +1,14 @@
-import { useState, useCallback } from "react";
-import GameScreen from "./components/GameScreen";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { useCallback } from "react";
+import LandingScreen from "./components/LandingScreen";
 import GameSetupScreen from "./components/GameSetupScreen";
+import GameScreen from "./components/GameScreen";
+import MatchHistoryScreen from "./components/MatchHistoryScreen";
 import useGameStore from "./stores/gameStore";
 
 function App() {
-  const [currentScreen, setCurrentScreen] = useState("setup");
-  const [editingExistingMatch, setEditingExistingMatch] = useState(false);
+  const navigate = useNavigate();
+  const updateGameSettings = useGameStore((state) => state.updateGameSettings);
 
   // Use useCallback to memoize this function
   const getGameSettings = useCallback(() => {
@@ -22,36 +25,61 @@ function App() {
     };
   }, []);
 
-  const updateGameSettings = useGameStore((state) => state.updateGameSettings);
-
-  const handleStartMatch = () => {
-    setCurrentScreen("game");
-    setEditingExistingMatch(false);
-  };
-
-  const handleBackToSetup = () => {
-    setCurrentScreen("setup");
-    setEditingExistingMatch(true);
-  };
-
-  const handleReturnToMatch = (settings) => {
-    updateGameSettings(settings);
-    setCurrentScreen("game");
-  };
-
   return (
     <div className="h-full flex flex-col">
       <div className="max-w-md mx-auto w-full h-full bg-white shadow-lg">
-        {currentScreen === "game" ? (
-          <GameScreen onBackToSetup={handleBackToSetup} />
-        ) : (
-          <GameSetupScreen
-            initialSettings={editingExistingMatch ? getGameSettings() : null}
-            onStartMatch={handleStartMatch}
-            onReturnToMatch={handleReturnToMatch}
-            isEditing={editingExistingMatch}
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <LandingScreen
+                onNewMatch={() => navigate("/setup")}
+                onFindMatch={() => navigate("/history")}
+              />
+            }
           />
-        )}
+
+          <Route
+            path="/setup"
+            element={
+              <GameSetupScreen
+                initialSettings={null}
+                onStartMatch={() => navigate("/game")}
+                onBack={() => navigate("/")}
+                isEditing={false}
+              />
+            }
+          />
+
+          <Route
+            path="/setup/edit"
+            element={
+              <GameSetupScreen
+                initialSettings={getGameSettings()}
+                onReturnToMatch={(settings) => {
+                  updateGameSettings(settings);
+                  navigate("/game");
+                }}
+                onBack={() => navigate("/game")}
+                isEditing={true}
+              />
+            }
+          />
+
+          <Route
+            path="/game"
+            element={
+              <GameScreen onBackToSetup={() => navigate("/setup/edit")} />
+            }
+          />
+
+          <Route
+            path="/history"
+            element={<MatchHistoryScreen onBack={() => navigate("/")} />}
+          />
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </div>
     </div>
   );
