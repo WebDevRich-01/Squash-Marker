@@ -89,9 +89,14 @@ export default function GameSetupScreen({
                         })
                       }
                       className="w-full p-2 border rounded appearance-none pl-10"
+                      style={{ zIndex: 30 }}
                     >
                       {colorOptions.map((color) => (
-                        <option key={color.value} value={color.value}>
+                        <option
+                          key={color.value}
+                          value={color.value}
+                          className="p-2"
+                        >
                           {color.label}
                         </option>
                       ))}
