@@ -78,6 +78,24 @@ const api = {
       }, 300);
     });
   },
+
+  // Add this function to get unique event names from existing matches
+  getEventNames: async () => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const matches = getStoredMatches();
+        // Extract unique event names, filtering out empty ones
+        const eventNames = [
+          ...new Set(
+            matches
+              .map((match) => match.eventName)
+              .filter((name) => name && name.trim() !== "")
+          ),
+        ];
+        resolve(eventNames);
+      }, 300);
+    });
+  },
 };
 
 export default api;

@@ -8,28 +8,41 @@ export default function MatchHistoryScreen({ onBack }) {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState("all"); // "all", "today", "week", "month"
+  const [eventFilter, setEventFilter] = useState("all"); // Add event filter
   const [expandedMatchId, setExpandedMatchId] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [matchToDelete, setMatchToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [eventNames, setEventNames] = useState([]); // Store unique event names
 
   useEffect(() => {
-    const fetchMatches = async () => {
-      try {
-        setLoading(true);
-        const response = await api.getMatches();
-        setMatches(response);
-        setError(null);
-      } catch (err) {
-        console.error("Error fetching matches:", err);
-        setError("Failed to load matches. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchMatches();
   }, []);
+
+  const fetchMatches = async () => {
+    try {
+      setLoading(true);
+      const response = await api.getMatches();
+      setMatches(response);
+
+      // Extract unique event names
+      const uniqueEvents = [
+        ...new Set(
+          response
+            .map((match) => match.eventName)
+            .filter((name) => name && name.trim() !== "")
+        ),
+      ];
+      setEventNames(uniqueEvents);
+
+      setError(null);
+    } catch (err) {
+      console.error("Error fetching matches:", err);
+      setError("Failed to load matches. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Handle delete button click
   const handleDeleteClick = (e, match) => {
@@ -88,19 +101,30 @@ export default function MatchHistoryScreen({ onBack }) {
     return matches;
   };
 
-  // Filter matches by search term (player name)
+  // Filter matches by search term
   const getFilteredBySearch = (matches) => {
     if (!searchTerm.trim()) return matches;
 
     return matches.filter(
       (match) =>
         match.player1Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        match.player2Name.toLowerCase().includes(searchTerm.toLowerCase())
+        match.player2Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (match.eventName &&
+          match.eventName.toLowerCase().includes(searchTerm.toLowerCase())) // Also search in event name
     );
   };
 
+  // Filter matches by event
+  const getFilteredByEvent = (matches) => {
+    if (eventFilter === "all") return matches;
+
+    return matches.filter((match) => match.eventName === eventFilter);
+  };
+
   // Apply all filters
-  const filteredMatches = getFilteredBySearch(getFilteredByDate(matches));
+  const filteredMatches = getFilteredByEvent(
+    getFilteredBySearch(getFilteredByDate(matches))
+  );
 
   // Format date for display
   const formatDate = (dateString) => {
@@ -173,11 +197,30 @@ export default function MatchHistoryScreen({ onBack }) {
         <div className="space-y-3">
           <input
             type="text"
-            placeholder="Search players..."
+            placeholder="Search players or events..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full p-2 border rounded"
           />
+
+          {/* Event filter dropdown */}
+          {eventNames.length > 0 && (
+            <div className="flex items-center gap-2">
+              <label className="whitespace-nowrap font-medium">Event:</label>
+              <select
+                value={eventFilter}
+                onChange={(e) => setEventFilter(e.target.value)}
+                className="p-2 border rounded flex-grow"
+              >
+                <option value="all">All Events</option>
+                {eventNames.map((name, index) => (
+                  <option key={index} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="flex gap-2 overflow-x-auto pb-1">
             <button
@@ -276,6 +319,15 @@ export default function MatchHistoryScreen({ onBack }) {
                     {getScoreDisplay(match)}
                   </span>
                 </div>
+
+                {/* Event name display */}
+                {match.eventName && (
+                  <div className="mb-2">
+                    <span className="text-sm font-medium bg-blue-100 text-blue-800 px-2 py-1 rounded inline-block">
+                      {match.eventName}
+                    </span>
+                  </div>
+                )}
 
                 <div className="flex justify-between items-center">
                   <div className="flex-1">

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useGameStore from "../stores/gameStore";
 import PropTypes from "prop-types";
+import api from "../utils/api";
 
 export default function GameSetupScreen({
   initialSettings,
@@ -19,10 +20,39 @@ export default function GameSetupScreen({
       clearPoints: 2,
       bestOf: 5,
       player1Serving: true,
+      eventName: "",
     }
   );
 
+  const [eventNames, setEventNames] = useState([]);
+  const [showEventSuggestions, setShowEventSuggestions] = useState(false);
+  const [filteredEvents, setFilteredEvents] = useState([]);
+
   const initializeGame = useGameStore((state) => state.initializeGame);
+
+  useEffect(() => {
+    const fetchEventNames = async () => {
+      try {
+        const names = await api.getEventNames();
+        setEventNames(names);
+      } catch (error) {
+        console.error("Error fetching event names:", error);
+      }
+    };
+
+    fetchEventNames();
+  }, []);
+
+  useEffect(() => {
+    if (settings.eventName) {
+      const filtered = eventNames.filter((name) =>
+        name.toLowerCase().includes(settings.eventName.toLowerCase())
+      );
+      setFilteredEvents(filtered);
+    } else {
+      setFilteredEvents(eventNames);
+    }
+  }, [settings.eventName, eventNames]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -35,6 +65,16 @@ export default function GameSetupScreen({
     }
   };
 
+  const handleEventNameChange = (e) => {
+    setSettings({ ...settings, eventName: e.target.value });
+    setShowEventSuggestions(true);
+  };
+
+  const selectEvent = (eventName) => {
+    setSettings({ ...settings, eventName });
+    setShowEventSuggestions(false);
+  };
+
   const colorOptions = [
     { value: "border-red-500", label: "Red", bgClass: "bg-red-500" },
     { value: "border-blue-500", label: "Blue", bgClass: "bg-blue-500" },
@@ -45,7 +85,6 @@ export default function GameSetupScreen({
     { value: "border-white", label: "White", bgClass: "bg-white border" },
   ];
 
-  // Helper function to get the background class for a color value
   const getColorBgClass = (colorValue) => {
     const color = colorOptions.find((c) => c.value === colorValue);
     return color ? color.bgClass : "";
@@ -63,7 +102,39 @@ export default function GameSetupScreen({
           </h2>
         </div>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Player 1 Settings Box */}
+          <div className="border rounded-lg p-4 bg-gray-50 shadow-sm">
+            <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">
+              Event
+            </h3>
+            <div className="relative">
+              <label className="block mb-1 font-medium">Event Name</label>
+              <input
+                type="text"
+                value={settings.eventName}
+                onChange={handleEventNameChange}
+                onFocus={() => setShowEventSuggestions(true)}
+                onBlur={() =>
+                  setTimeout(() => setShowEventSuggestions(false), 200)
+                }
+                className="w-full p-2 border rounded"
+                placeholder="Enter event name"
+              />
+              {showEventSuggestions && filteredEvents.length > 0 && (
+                <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-auto">
+                  {filteredEvents.map((name, index) => (
+                    <div
+                      key={index}
+                      className="p-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => selectEvent(name)}
+                    >
+                      {name}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="border rounded-lg p-4 bg-gray-50 shadow-sm">
             <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">
               Player 1
@@ -82,9 +153,7 @@ export default function GameSetupScreen({
                 />
               </div>
 
-              {/* Color and Serving side by side */}
               <div className="flex gap-3">
-                {/* Color selector */}
                 <div className="flex-1">
                   <div className="relative">
                     <select
@@ -116,7 +185,6 @@ export default function GameSetupScreen({
                   </div>
                 </div>
 
-                {/* Serves First checkbox */}
                 <div className="flex-1 flex items-center p-2 bg-white rounded border">
                   <input
                     type="checkbox"
@@ -136,7 +204,6 @@ export default function GameSetupScreen({
             </div>
           </div>
 
-          {/* Player 2 Settings Box */}
           <div className="border rounded-lg p-4 bg-gray-50 shadow-sm">
             <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">
               Player 2
@@ -155,9 +222,7 @@ export default function GameSetupScreen({
                 />
               </div>
 
-              {/* Color and Serving side by side */}
               <div className="flex gap-3">
-                {/* Color selector */}
                 <div className="flex-1">
                   <div className="relative">
                     <select
@@ -189,7 +254,6 @@ export default function GameSetupScreen({
                   </div>
                 </div>
 
-                {/* Serves First checkbox */}
                 <div className="flex-1 flex items-center p-2 bg-white rounded border">
                   <input
                     type="checkbox"
@@ -209,15 +273,12 @@ export default function GameSetupScreen({
             </div>
           </div>
 
-          {/* Match Settings Box */}
           <div className="border rounded-lg p-4 bg-gray-50 shadow-sm">
             <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">
               Match Settings
             </h3>
             <div className="space-y-3">
-              {/* Points to Win and 2 Clear Points side by side */}
               <div className="flex gap-3">
-                {/* Points to Win */}
                 <div className="flex-1">
                   <label className="block mb-1 font-medium">
                     Points to Win
@@ -238,7 +299,6 @@ export default function GameSetupScreen({
                   </select>
                 </div>
 
-                {/* 2 Clear Points checkbox */}
                 <div className="flex-1 flex items-end">
                   <div className="flex items-center p-2 bg-white rounded border w-full">
                     <input
@@ -257,7 +317,6 @@ export default function GameSetupScreen({
                 </div>
               </div>
 
-              {/* Match Format */}
               <div>
                 <label className="block mb-1 font-medium">Match Format</label>
                 <select
@@ -297,6 +356,7 @@ GameSetupScreen.propTypes = {
     clearPoints: PropTypes.number,
     bestOf: PropTypes.number,
     player1Serving: PropTypes.bool,
+    eventName: PropTypes.string,
   }),
   onStartMatch: PropTypes.func.isRequired,
   onReturnToMatch: PropTypes.func,

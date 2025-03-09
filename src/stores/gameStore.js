@@ -62,6 +62,9 @@ const useGameStore = create((set, get) => ({
   // Add a flag to track if the match has been saved
   matchSaved: false,
 
+  // Add event name to the store state
+  eventName: "",
+
   // Actions
   setPlayerDetails: (playerNum, details) =>
     set((state) => ({
@@ -544,9 +547,11 @@ const useGameStore = create((set, get) => ({
         serving: !settings.player1Serving,
         serveSide: "R",
       },
+      eventName: settings.eventName || "", // Add event name
       currentGame: 1,
       gameScores: [],
       matchWon: false,
+      matchSaved: false,
       scoreHistory: [
         {
           type: "initial",
@@ -578,6 +583,7 @@ const useGameStore = create((set, get) => ({
       player2Color: state.player2.color,
       gameScores: state.gameScores,
       matchSettings: state.matchSettings,
+      eventName: state.eventName, // Include event name
       date: new Date(),
     };
 
