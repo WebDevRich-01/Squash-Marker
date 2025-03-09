@@ -1,8 +1,8 @@
 import { create } from "zustand";
-import { api } from "../services/api";
+import api from "../utils/api";
 
 const getUniqueTimestamp = () => {
-  return Date.now() * 1000 + Math.floor(Math.random() * 1000);
+  return new Date().getTime();
 };
 
 const useGameStore = create((set, get) => ({
@@ -576,6 +576,7 @@ const useGameStore = create((set, get) => ({
       set({ isSaving: false });
       return true;
     } catch (error) {
+      console.error("Error saving match:", error);
       set({
         saveError: "Failed to save match. Please try again.",
         isSaving: false,

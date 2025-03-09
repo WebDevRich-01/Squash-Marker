@@ -1,38 +1,62 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
+// Mock API using localStorage
+const STORAGE_KEY = "squash_matches";
+
+// Helper to get matches from localStorage
+const getStoredMatches = () => {
+  const matches = localStorage.getItem(STORAGE_KEY);
+  return matches ? JSON.parse(matches) : [];
+};
+
+// Helper to save matches to localStorage
+const saveStoredMatches = (matches) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(matches));
+};
 
 const api = {
   // Get all matches
   getMatches: async () => {
-    const response = await fetch(`${API_URL}/matches`);
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-    return response.json();
+    return new Promise((resolve) => {
+      // Simulate network delay
+      setTimeout(() => {
+        const matches = getStoredMatches();
+        resolve(matches);
+      }, 500);
+    });
   },
 
   // Get a specific match
   getMatch: async (id) => {
-    const response = await fetch(`${API_URL}/matches/${id}`);
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-    return response.json();
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const matches = getStoredMatches();
+        const match = matches.find((m) => m._id === id);
+
+        if (match) {
+          resolve(match);
+        } else {
+          reject(new Error("Match not found"));
+        }
+      }, 300);
+    });
   },
 
   // Save a match
   saveMatch: async (matchData) => {
-    const response = await fetch(`${API_URL}/matches`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(matchData),
-    });
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const matches = getStoredMatches();
+        const newMatch = {
+          ...matchData,
+          _id: `match_${Date.now()}`, // Generate a simple ID
+          date: new Date().toISOString(),
+        };
 
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-    return response.json();
+        matches.unshift(newMatch); // Add to beginning of array
+        saveStoredMatches(matches);
+
+        resolve(newMatch);
+      }, 300);
+    });
   },
 };
 
