@@ -58,6 +58,26 @@ const api = {
       }, 300);
     });
   },
+
+  // Delete a match
+  deleteMatch: async (id) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const matches = getStoredMatches();
+        const updatedMatches = matches.filter((match) => match._id !== id);
+
+        // If the lengths are different, a match was removed
+        const success = updatedMatches.length < matches.length;
+
+        if (success) {
+          saveStoredMatches(updatedMatches);
+          resolve({ success: true });
+        } else {
+          resolve({ success: false, error: "Match not found" });
+        }
+      }, 300);
+    });
+  },
 };
 
 export default api;
