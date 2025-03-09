@@ -34,14 +34,20 @@ export default function GameSetupScreen({
   };
 
   const colorOptions = [
-    { value: "border-red-500", label: "Red", class: "bg-red-500" },
-    { value: "border-blue-500", label: "Blue", class: "bg-blue-500" },
-    { value: "border-green-500", label: "Green", class: "bg-green-500" },
-    { value: "border-yellow-500", label: "Yellow", class: "bg-yellow-500" },
-    { value: "border-purple-500", label: "Purple", class: "bg-purple-500" },
-    { value: "border-black", label: "Black", class: "bg-black text-white" },
-    { value: "border-white", label: "White", class: "bg-white border" },
+    { value: "border-red-500", label: "Red", bgClass: "bg-red-500" },
+    { value: "border-blue-500", label: "Blue", bgClass: "bg-blue-500" },
+    { value: "border-green-500", label: "Green", bgClass: "bg-green-500" },
+    { value: "border-yellow-500", label: "Yellow", bgClass: "bg-yellow-500" },
+    { value: "border-purple-500", label: "Purple", bgClass: "bg-purple-500" },
+    { value: "border-black", label: "Black", bgClass: "bg-black" },
+    { value: "border-white", label: "White", bgClass: "bg-white border" },
   ];
+
+  // Helper function to get the background class for a color value
+  const getColorBgClass = (colorValue) => {
+    const color = colorOptions.find((c) => c.value === colorValue);
+    return color ? color.bgClass : "";
+  };
 
   return (
     <div className="h-full flex items-center justify-center bg-gray-100 p-4 overflow-auto">
@@ -68,40 +74,52 @@ export default function GameSetupScreen({
                   placeholder="Enter name"
                 />
               </div>
-              <div className="flex items-center p-2 bg-white rounded border">
-                <input
-                  type="checkbox"
-                  checked={settings.player1Serving}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      player1Serving: e.target.checked,
-                      player2Serving: !e.target.checked,
-                    })
-                  }
-                  className="mr-2 h-4 w-4"
-                />
-                <label className="font-medium">Serves First</label>
-              </div>
-              <div>
-                <label className="block mb-1 font-medium">Color</label>
-                <select
-                  value={settings.player1Color}
-                  onChange={(e) =>
-                    setSettings({ ...settings, player1Color: e.target.value })
-                  }
-                  className="w-full p-2 border rounded"
-                >
-                  {colorOptions.map((color) => (
-                    <option
-                      key={color.value}
-                      value={color.value}
-                      className={color.class}
+
+              {/* Color and Serving side by side */}
+              <div className="flex gap-3">
+                {/* Color selector */}
+                <div className="flex-1">
+                  <div className="relative">
+                    <select
+                      value={settings.player1Color}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          player1Color: e.target.value,
+                        })
+                      }
+                      className="w-full p-2 border rounded appearance-none pl-10"
                     >
-                      {color.label}
-                    </option>
-                  ))}
-                </select>
+                      {colorOptions.map((color) => (
+                        <option key={color.value} value={color.value}>
+                          {color.label}
+                        </option>
+                      ))}
+                    </select>
+                    <div
+                      className={`absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full ${getColorBgClass(
+                        settings.player1Color
+                      )}`}
+                    />
+                  </div>
+                </div>
+
+                {/* Serves First checkbox */}
+                <div className="flex-1 flex items-center p-2 bg-white rounded border">
+                  <input
+                    type="checkbox"
+                    checked={settings.player1Serving}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        player1Serving: e.target.checked,
+                        player2Serving: !e.target.checked,
+                      })
+                    }
+                    className="mr-2 h-4 w-4"
+                  />
+                  <label className="font-medium">Serves First</label>
+                </div>
               </div>
             </div>
           </div>
@@ -124,40 +142,52 @@ export default function GameSetupScreen({
                   placeholder="Enter name"
                 />
               </div>
-              <div className="flex items-center p-2 bg-white rounded border">
-                <input
-                  type="checkbox"
-                  checked={!settings.player1Serving}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      player1Serving: !e.target.checked,
-                      player2Serving: e.target.checked,
-                    })
-                  }
-                  className="mr-2 h-4 w-4"
-                />
-                <label className="font-medium">Serves First</label>
-              </div>
-              <div>
-                <label className="block mb-1 font-medium">Color</label>
-                <select
-                  value={settings.player2Color}
-                  onChange={(e) =>
-                    setSettings({ ...settings, player2Color: e.target.value })
-                  }
-                  className="w-full p-2 border rounded"
-                >
-                  {colorOptions.map((color) => (
-                    <option
-                      key={color.value}
-                      value={color.value}
-                      className={color.class}
+
+              {/* Color and Serving side by side */}
+              <div className="flex gap-3">
+                {/* Color selector */}
+                <div className="flex-1">
+                  <div className="relative">
+                    <select
+                      value={settings.player2Color}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          player2Color: e.target.value,
+                        })
+                      }
+                      className="w-full p-2 border rounded appearance-none pl-10"
                     >
-                      {color.label}
-                    </option>
-                  ))}
-                </select>
+                      {colorOptions.map((color) => (
+                        <option key={color.value} value={color.value}>
+                          {color.label}
+                        </option>
+                      ))}
+                    </select>
+                    <div
+                      className={`absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full ${getColorBgClass(
+                        settings.player2Color
+                      )}`}
+                    />
+                  </div>
+                </div>
+
+                {/* Serves First checkbox */}
+                <div className="flex-1 flex items-center p-2 bg-white rounded border">
+                  <input
+                    type="checkbox"
+                    checked={!settings.player1Serving}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        player1Serving: !e.target.checked,
+                        player2Serving: e.target.checked,
+                      })
+                    }
+                    className="mr-2 h-4 w-4"
+                  />
+                  <label className="font-medium">Serves First</label>
+                </div>
               </div>
             </div>
           </div>
@@ -168,22 +198,48 @@ export default function GameSetupScreen({
               Match Settings
             </h3>
             <div className="space-y-3">
-              <div>
-                <label className="block mb-1 font-medium">Points to Win</label>
-                <select
-                  value={settings.pointsToWin}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      pointsToWin: Number(e.target.value),
-                    })
-                  }
-                  className="w-full p-2 border rounded"
-                >
-                  <option value={11}>11 Points</option>
-                  <option value={15}>15 Points</option>
-                </select>
+              {/* Points to Win and 2 Clear Points side by side */}
+              <div className="flex gap-3">
+                {/* Points to Win */}
+                <div className="flex-1">
+                  <label className="block mb-1 font-medium">
+                    Points to Win
+                  </label>
+                  <select
+                    value={settings.pointsToWin}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        pointsToWin: Number(e.target.value),
+                      })
+                    }
+                    className="w-full p-2 border rounded"
+                  >
+                    <option value={11}>11 Points</option>
+                    <option value={15}>15 Points</option>
+                  </select>
+                </div>
+
+                {/* 2 Clear Points checkbox */}
+                <div className="flex-1 flex items-end">
+                  <div className="flex items-center p-2 bg-white rounded border w-full">
+                    <input
+                      type="checkbox"
+                      checked={settings.clearPoints === 2}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          clearPoints: e.target.checked ? 2 : 1,
+                        })
+                      }
+                      className="mr-2 h-4 w-4"
+                    />
+                    <label className="font-medium">2 Clear Points</label>
+                  </div>
+                </div>
               </div>
+
+              {/* Match Format */}
               <div>
                 <label className="block mb-1 font-medium">Match Format</label>
                 <select
@@ -196,20 +252,6 @@ export default function GameSetupScreen({
                   <option value={3}>Best of 3</option>
                   <option value={5}>Best of 5</option>
                 </select>
-              </div>
-              <div className="flex items-center p-2 bg-white rounded border">
-                <input
-                  type="checkbox"
-                  checked={settings.clearPoints === 2}
-                  onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      clearPoints: e.target.checked ? 2 : 1,
-                    })
-                  }
-                  className="mr-2 h-4 w-4"
-                />
-                <label className="font-medium">Win by 2 clear points</label>
               </div>
             </div>
           </div>
