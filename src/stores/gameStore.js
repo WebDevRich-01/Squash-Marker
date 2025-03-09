@@ -59,6 +59,9 @@ const useGameStore = create((set, get) => ({
   saveError: null,
   isSaving: false,
 
+  // Add a flag to track if the match has been saved
+  matchSaved: false,
+
   // Actions
   setPlayerDetails: (playerNum, details) =>
     set((state) => ({
@@ -249,6 +252,7 @@ const useGameStore = create((set, get) => ({
       // Reset error states
       saveError: null,
       isSaving: false,
+      matchSaved: false, // Reset the saved flag
     })),
 
   undoLastPoint: () =>
@@ -559,6 +563,12 @@ const useGameStore = create((set, get) => ({
   // Updated save method with error handling
   saveCompletedMatch: async () => {
     const state = get();
+
+    // Check if the match has already been saved
+    if (state.matchSaved) {
+      return true; // Already saved, no need to save again
+    }
+
     set({ isSaving: true, saveError: null });
 
     const matchData = {
@@ -573,7 +583,7 @@ const useGameStore = create((set, get) => ({
 
     try {
       await api.saveMatch(matchData);
-      set({ isSaving: false });
+      set({ isSaving: false, matchSaved: true });
       return true;
     } catch (error) {
       console.error("Error saving match:", error);
@@ -588,12 +598,13 @@ const useGameStore = create((set, get) => ({
   // Updated game completion handler
   handleGameCompletion: async () => {
     const state = get();
-    const { currentGame } = state;
 
     // Check if match is won
     const matchWon = get().checkMatchWin();
     if (matchWon) {
       set({ matchWon: true });
+
+      // Only save if the match is actually won
       const savedSuccessfully = await get().saveCompletedMatch();
       if (!savedSuccessfully) {
         console.error("Match save failed");

@@ -59,19 +59,9 @@ export default function GameScreen({ onBackToSetup }) {
   };
 
   const handleFinishMatch = async () => {
-    // Save the match before navigating away
-    if (matchWon) {
-      try {
-        await saveCompletedMatch();
-      } catch (error) {
-        console.error("Error saving match:", error);
-      }
-    }
-
-    // Reset the game state
+    // No need to save here as it's already saved in handleGameCompletion
+    // Just reset the game state and navigate
     resetGame();
-
-    // Navigate to the landing screen
     navigate("/");
   };
 
