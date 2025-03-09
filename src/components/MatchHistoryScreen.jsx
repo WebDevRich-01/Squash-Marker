@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../utils/api";
+import PropTypes from "prop-types";
 
 export default function MatchHistoryScreen({ onBack }) {
   const [matches, setMatches] = useState([]);
@@ -7,6 +8,7 @@ export default function MatchHistoryScreen({ onBack }) {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState("all"); // "all", "today", "week", "month"
+  const [expandedMatchId, setExpandedMatchId] = useState(null);
 
   useEffect(() => {
     const fetchMatches = async () => {
@@ -106,6 +108,15 @@ export default function MatchHistoryScreen({ onBack }) {
     return `${player1Wins}-${player2Wins}`;
   };
 
+  // Toggle expanded state for a match
+  const toggleExpanded = (matchId) => {
+    if (expandedMatchId === matchId) {
+      setExpandedMatchId(null);
+    } else {
+      setExpandedMatchId(matchId);
+    }
+  };
+
   return (
     <div className="h-full flex flex-col bg-gray-100">
       <div className="p-4 bg-white border-b">
@@ -134,10 +145,10 @@ export default function MatchHistoryScreen({ onBack }) {
             className="w-full p-2 border rounded"
           />
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-x-auto pb-1">
             <button
               onClick={() => setDateFilter("all")}
-              className={`px-3 py-1 rounded ${
+              className={`px-3 py-1 rounded whitespace-nowrap ${
                 dateFilter === "all" ? "bg-blue-500 text-white" : "bg-gray-200"
               }`}
             >
@@ -145,7 +156,7 @@ export default function MatchHistoryScreen({ onBack }) {
             </button>
             <button
               onClick={() => setDateFilter("today")}
-              className={`px-3 py-1 rounded ${
+              className={`px-3 py-1 rounded whitespace-nowrap ${
                 dateFilter === "today"
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200"
@@ -155,7 +166,7 @@ export default function MatchHistoryScreen({ onBack }) {
             </button>
             <button
               onClick={() => setDateFilter("week")}
-              className={`px-3 py-1 rounded ${
+              className={`px-3 py-1 rounded whitespace-nowrap ${
                 dateFilter === "week" ? "bg-blue-500 text-white" : "bg-gray-200"
               }`}
             >
@@ -163,7 +174,7 @@ export default function MatchHistoryScreen({ onBack }) {
             </button>
             <button
               onClick={() => setDateFilter("month")}
-              className={`px-3 py-1 rounded ${
+              className={`px-3 py-1 rounded whitespace-nowrap ${
                 dateFilter === "month"
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200"
@@ -230,15 +241,55 @@ export default function MatchHistoryScreen({ onBack }) {
                   </div>
                 </div>
 
-                {/* Game details (expandable) */}
-                <div className="mt-3 pt-2 border-t text-sm text-gray-600">
-                  <div className="flex justify-between">
-                    <span>
-                      {match.matchSettings.pointsToWin} points,
-                      {match.matchSettings.clearPoints === 2 ? " 2 clear" : ""}
-                    </span>
-                    <span>Best of {match.matchSettings.bestOf}</span>
+                {/* Game scores section */}
+                <div className="mt-3 pt-2 border-t">
+                  <div
+                    className="flex justify-between items-center cursor-pointer"
+                    onClick={() => toggleExpanded(match._id)}
+                  >
+                    <div className="text-sm text-gray-600">
+                      {match.matchSettings.pointsToWin} points
+                      {match.matchSettings.clearPoints === 2 ? ", 2 clear" : ""}
+                      {" • "}
+                      Best of {match.matchSettings.bestOf}
+                    </div>
+                    <button className="text-blue-500 text-sm">
+                      {expandedMatchId === match._id
+                        ? "Hide scores"
+                        : "Show scores"}
+                    </button>
                   </div>
+
+                  {/* Expanded game scores */}
+                  {expandedMatchId === match._id && (
+                    <div className="mt-2 space-y-2 bg-gray-50 p-3 rounded">
+                      {match.gameScores.map((score, index) => (
+                        <div
+                          key={index}
+                          className="flex justify-between text-sm"
+                        >
+                          <div className="font-medium">Game {index + 1}</div>
+                          <div>
+                            <span
+                              className={
+                                score.player1 > score.player2 ? "font-bold" : ""
+                              }
+                            >
+                              {score.player1}
+                            </span>
+                            {" - "}
+                            <span
+                              className={
+                                score.player2 > score.player1 ? "font-bold" : ""
+                              }
+                            >
+                              {score.player2}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -248,3 +299,7 @@ export default function MatchHistoryScreen({ onBack }) {
     </div>
   );
 }
+
+MatchHistoryScreen.propTypes = {
+  onBack: PropTypes.func.isRequired,
+};
