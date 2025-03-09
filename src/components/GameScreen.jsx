@@ -4,8 +4,10 @@ import ScoreColumns from "./ScoreColumns";
 import PlayerButton from "./PlayerButton";
 import LetDecisionModal from "./LetDecisionModal";
 import GameWinModal from "./GameWinModal";
+import { useNavigate } from "react-router-dom";
 
 export default function GameScreen({ onBackToSetup }) {
+  const navigate = useNavigate();
   const [letModalOpen, setLetModalOpen] = useState(false);
   const [letCallingPlayer, setLetCallingPlayer] = useState(null);
   const [gameWinModalOpen, setGameWinModalOpen] = useState(false);
@@ -25,6 +27,7 @@ export default function GameScreen({ onBackToSetup }) {
     checkGameWin,
     handleGameCompletion,
     resetGame,
+    saveCompletedMatch,
   } = useGameStore();
 
   // Check for game wins without trying to save to backend
@@ -55,8 +58,21 @@ export default function GameScreen({ onBackToSetup }) {
     setGameWinModalOpen(false);
   };
 
-  const handleFinishMatch = () => {
-    window.location.reload();
+  const handleFinishMatch = async () => {
+    // Save the match before navigating away
+    if (matchWon) {
+      try {
+        await saveCompletedMatch();
+      } catch (error) {
+        console.error("Error saving match:", error);
+      }
+    }
+
+    // Reset the game state
+    resetGame();
+
+    // Navigate to the landing screen
+    navigate("/");
   };
 
   const getGameScoreDisplay = () => {
