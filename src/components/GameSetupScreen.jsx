@@ -57,6 +57,9 @@ export default function GameSetupScreen({
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Log the settings to debug
+    console.log("Submitting game setup with settings:", settings);
+
     if (isEditing) {
       onReturnToMatch(settings);
     } else {

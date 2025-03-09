@@ -23,6 +23,7 @@ export default function MatchHistoryScreen({ onBack }) {
     try {
       setLoading(true);
       const response = await api.getMatches();
+      console.log("Fetched matches:", response); // Debug log
       setMatches(response);
 
       // Extract unique event names
@@ -33,6 +34,7 @@ export default function MatchHistoryScreen({ onBack }) {
             .filter((name) => name && name.trim() !== "")
         ),
       ];
+      console.log("Unique events:", uniqueEvents); // Debug log
       setEventNames(uniqueEvents);
 
       setError(null);
@@ -203,24 +205,22 @@ export default function MatchHistoryScreen({ onBack }) {
             className="w-full p-2 border rounded"
           />
 
-          {/* Event filter dropdown */}
-          {eventNames.length > 0 && (
-            <div className="flex items-center gap-2">
-              <label className="whitespace-nowrap font-medium">Event:</label>
-              <select
-                value={eventFilter}
-                onChange={(e) => setEventFilter(e.target.value)}
-                className="p-2 border rounded flex-grow"
-              >
-                <option value="all">All Events</option>
-                {eventNames.map((name, index) => (
-                  <option key={index} value={name}>
-                    {name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          {/* Event filter dropdown - always show it */}
+          <div className="flex items-center gap-2">
+            <label className="whitespace-nowrap font-medium">Event:</label>
+            <select
+              value={eventFilter}
+              onChange={(e) => setEventFilter(e.target.value)}
+              className="p-2 border rounded flex-grow"
+            >
+              <option value="all">All Events</option>
+              {eventNames.map((name, index) => (
+                <option key={index} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </div>
 
           <div className="flex gap-2 overflow-x-auto pb-1">
             <button
@@ -320,9 +320,9 @@ export default function MatchHistoryScreen({ onBack }) {
                   </span>
                 </div>
 
-                {/* Event name display */}
+                {/* Event name display - make it more prominent */}
                 {match.eventName && (
-                  <div className="mb-2">
+                  <div className="mb-3">
                     <span className="text-sm font-medium bg-blue-100 text-blue-800 px-2 py-1 rounded inline-block">
                       {match.eventName}
                     </span>

@@ -216,13 +216,6 @@ const useGameStore = create((set, get) => ({
 
   resetGame: () =>
     set(() => ({
-      // Match settings reset to defaults
-      matchSettings: {
-        pointsToWin: 15,
-        clearPoints: 2,
-        bestOf: 5,
-      },
-      // Reset player details
       player1: {
         name: "",
         color: "border-red-500",
@@ -237,11 +230,11 @@ const useGameStore = create((set, get) => ({
         serving: false,
         serveSide: "R",
       },
-      // Reset match state
       currentGame: 1,
       gameScores: [],
       matchWon: false,
-      // Reset score history
+      matchSaved: false,
+      eventName: "",
       scoreHistory: [
         {
           type: "initial",
@@ -252,10 +245,6 @@ const useGameStore = create((set, get) => ({
           timestamp: getUniqueTimestamp(),
         },
       ],
-      // Reset error states
-      saveError: null,
-      isSaving: false,
-      matchSaved: false, // Reset the saved flag
     })),
 
   undoLastPoint: () =>
@@ -527,6 +516,12 @@ const useGameStore = create((set, get) => ({
 
   // Initialize game with settings
   initializeGame: (settings) => {
+    console.log("Initializing game with settings:", settings); // Debug log
+
+    // Make sure eventName is a string, not undefined or null
+    const eventName = settings.eventName || "";
+    console.log("Event name being set:", eventName); // Specific debug for event name
+
     set(() => ({
       matchSettings: {
         pointsToWin: settings.pointsToWin,
@@ -547,7 +542,7 @@ const useGameStore = create((set, get) => ({
         serving: !settings.player1Serving,
         serveSide: "R",
       },
-      eventName: settings.eventName || "", // Add event name
+      eventName: eventName, // Use the validated event name
       currentGame: 1,
       gameScores: [],
       matchWon: false,
@@ -563,6 +558,14 @@ const useGameStore = create((set, get) => ({
         },
       ],
     }));
+
+    // Debug log to verify the state after initialization
+    console.log("Game state after initialization:", {
+      eventName: get().eventName,
+      player1: get().player1,
+      player2: get().player2,
+      matchSettings: get().matchSettings,
+    });
   },
 
   // Updated save method with error handling
@@ -576,6 +579,17 @@ const useGameStore = create((set, get) => ({
 
     set({ isSaving: true, saveError: null });
 
+    // Log the current state to debug
+    console.log("Current state before saving:", {
+      eventName: state.eventName,
+      player1: state.player1,
+      player2: state.player2,
+    });
+
+    // Make sure eventName is a string, not undefined or null
+    const eventName = state.eventName || "";
+    console.log("Event name being saved:", eventName); // Specific debug for event name
+
     const matchData = {
       player1Name: state.player1.name,
       player2Name: state.player2.name,
@@ -583,9 +597,11 @@ const useGameStore = create((set, get) => ({
       player2Color: state.player2.color,
       gameScores: state.gameScores,
       matchSettings: state.matchSettings,
-      eventName: state.eventName, // Include event name
+      eventName: eventName, // Use the validated event name
       date: new Date(),
     };
+
+    console.log("Saving match with data:", matchData); // Debug log
 
     try {
       await api.saveMatch(matchData);
@@ -655,8 +671,10 @@ const useGameStore = create((set, get) => ({
     return 0; // No winner yet
   },
 
-  // Add this method to the store
+  // Update the updateGameSettings method to preserve the event name
   updateGameSettings: (settings) => {
+    console.log("Updating game settings:", settings); // Debug log
+
     set((state) => ({
       matchSettings: {
         ...state.matchSettings,
@@ -676,8 +694,18 @@ const useGameStore = create((set, get) => ({
         color: settings.player2Color,
         // Don't update score or serving status
       },
+      // Update or preserve the event name
+      eventName: settings.eventName || state.eventName || "",
       // Don't reset currentGame, gameScores, or matchWon
     }));
+
+    // Debug log to verify the state after update
+    console.log("Game state after settings update:", {
+      eventName: get().eventName,
+      player1: get().player1,
+      player2: get().player2,
+      matchSettings: get().matchSettings,
+    });
   },
 }));
 

@@ -51,6 +51,8 @@ const api = {
           date: new Date().toISOString(),
         };
 
+        console.log("API saving match:", newMatch); // Debug log
+
         matches.unshift(newMatch); // Add to beginning of array
         saveStoredMatches(matches);
 
