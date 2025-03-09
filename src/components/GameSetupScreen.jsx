@@ -1,5 +1,6 @@
 import { useState } from "react";
 import useGameStore from "../stores/gameStore";
+import PropTypes from "prop-types";
 
 export default function GameSetupScreen({
   initialSettings,
@@ -285,3 +286,25 @@ export default function GameSetupScreen({
     </div>
   );
 }
+
+GameSetupScreen.propTypes = {
+  initialSettings: PropTypes.shape({
+    player1Name: PropTypes.string,
+    player2Name: PropTypes.string,
+    player1Color: PropTypes.string,
+    player2Color: PropTypes.string,
+    pointsToWin: PropTypes.number,
+    clearPoints: PropTypes.number,
+    bestOf: PropTypes.number,
+    player1Serving: PropTypes.bool,
+  }),
+  onStartMatch: PropTypes.func.isRequired,
+  onReturnToMatch: PropTypes.func,
+  isEditing: PropTypes.bool.isRequired,
+  onBack: PropTypes.func.isRequired,
+};
+
+GameSetupScreen.defaultProps = {
+  initialSettings: null,
+  onReturnToMatch: null,
+};
