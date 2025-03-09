@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import { useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
 import LandingScreen from "./components/LandingScreen";
 import GameSetupScreen from "./components/GameSetupScreen";
 import GameScreen from "./components/GameScreen";
@@ -9,6 +9,17 @@ import useGameStore from "./stores/gameStore";
 function App() {
   const navigate = useNavigate();
   const updateGameSettings = useGameStore((state) => state.updateGameSettings);
+  const [hasActiveMatch, setHasActiveMatch] = useState(false);
+
+  // Check if there's an active match when the component mounts
+  useEffect(() => {
+    const state = useGameStore.getState();
+    const hasMatch =
+      state.gameScores.length > 0 ||
+      state.player1.score > 0 ||
+      state.player2.score > 0;
+    setHasActiveMatch(hasMatch);
+  }, []);
 
   // Use useCallback to memoize this function
   const getGameSettings = useCallback(() => {
@@ -25,6 +36,17 @@ function App() {
     };
   }, []);
 
+  // Handle navigation from GameSetupScreen back to landing
+  const handleBackFromSetup = () => {
+    // If we're editing an existing match, preserve the match state
+    if (hasActiveMatch) {
+      navigate("/");
+    } else {
+      // If it's a new match setup, just go back to landing
+      navigate("/");
+    }
+  };
+
   return (
     <div className="h-full flex flex-col">
       <div className="max-w-md mx-auto w-full h-full bg-white shadow-lg">
@@ -33,8 +55,18 @@ function App() {
             path="/"
             element={
               <LandingScreen
-                onNewMatch={() => navigate("/setup")}
+                onNewMatch={() => {
+                  // Reset game state for new match
+                  if (hasActiveMatch) {
+                    // If there's an active match, go to edit screen
+                    navigate("/setup/edit");
+                  } else {
+                    // Otherwise go to new match setup
+                    navigate("/setup");
+                  }
+                }}
                 onFindMatch={() => navigate("/history")}
+                hasActiveMatch={hasActiveMatch}
               />
             }
           />
@@ -44,7 +76,10 @@ function App() {
             element={
               <GameSetupScreen
                 initialSettings={null}
-                onStartMatch={() => navigate("/game")}
+                onStartMatch={() => {
+                  setHasActiveMatch(true);
+                  navigate("/game");
+                }}
                 onBack={() => navigate("/")}
                 isEditing={false}
               />
@@ -60,7 +95,7 @@ function App() {
                   updateGameSettings(settings);
                   navigate("/game");
                 }}
-                onBack={() => navigate("/game")}
+                onBack={() => navigate("/")}
                 isEditing={true}
               />
             }
