@@ -51,7 +51,7 @@ export default function MatchHistoryScreen({ onBack }) {
     const fetchEvents = async () => {
       try {
         // Check if we're in development mode using environment variable
-        const envValue = import.meta.env.VITE_LOCAL_STORAGE;
+        const envValue = import.meta.env.VITE_USE_LOCAL_STORAGE;
         const isDevelopment = envValue === "true";
 
         if (isDevelopment) {
