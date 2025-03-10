@@ -46,6 +46,50 @@ export default function MatchHistoryScreen({ onBack }) {
     }
   };
 
+  // Add useEffect to fetch events from the API or local storage
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        // Check if we're in development mode using environment variable
+        const isDevelopment =
+          process.env.REACT_APP_USE_LOCAL_STORAGE === "true";
+
+        if (isDevelopment) {
+          // Use local storage in development
+          const storedEvents = localStorage.getItem("events");
+          if (storedEvents) {
+            const parsedEvents = JSON.parse(storedEvents);
+            const uniqueEvents = [
+              ...new Set(parsedEvents.map((event) => event.name)),
+            ];
+            setEventNames(uniqueEvents);
+            console.log("Loaded events from local storage:", uniqueEvents);
+          } else {
+            setEventNames([]);
+            console.log("No events found in local storage");
+          }
+        } else {
+          // Use API in production
+          const API_URL =
+            process.env.REACT_APP_API_URL || "http://localhost:3001";
+          console.log("Fetching events from API:", `${API_URL}/api/events`);
+          const response = await fetch(`${API_URL}/api/events`);
+          if (!response.ok) {
+            throw new Error("Failed to fetch events");
+          }
+          const data = await response.json();
+          const uniqueEvents = [...new Set(data.map((event) => event.name))];
+          setEventNames(uniqueEvents);
+          console.log("Loaded events from API:", uniqueEvents);
+        }
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
   // Handle delete button click
   const handleDeleteClick = (e, match) => {
     e.stopPropagation(); // Prevent expanding the match details

@@ -3,6 +3,62 @@ import useGameStore from "../stores/gameStore";
 import PropTypes from "prop-types";
 import api from "../utils/api";
 
+const saveEventToLocalStorage = (eventName) => {
+  if (!eventName || eventName.trim() === "") return;
+
+  try {
+    // Check if we're in development mode using environment variable
+    const isDevelopment = process.env.REACT_APP_USE_LOCAL_STORAGE === "true";
+
+    if (isDevelopment) {
+      // Get existing events
+      const storedEvents = localStorage.getItem("events");
+      let events = storedEvents ? JSON.parse(storedEvents) : [];
+
+      // Check if event already exists
+      if (!events.some((event) => event.name === eventName)) {
+        // Add new event
+        events.push({
+          name: eventName,
+          date: new Date().toISOString(),
+          id: Date.now().toString(), // Simple unique ID
+        });
+
+        // Save back to local storage
+        localStorage.setItem("events", JSON.stringify(events));
+        console.log("Saved event to local storage:", eventName);
+      }
+    } else {
+      // In production, save to API
+      const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
+      fetch(`${API_URL}/api/events`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: eventName,
+          date: new Date().toISOString(),
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to save event to API");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("Saved event to API:", data);
+        })
+        .catch((error) => {
+          console.error("Error saving event to API:", error);
+        });
+    }
+  } catch (error) {
+    console.error("Error saving event:", error);
+  }
+};
+
 export default function GameSetupScreen({
   initialSettings,
   onStartMatch,
@@ -60,6 +116,11 @@ export default function GameSetupScreen({
     // Log the settings to debug
     console.log("Submitting game setup with settings:", settings);
 
+    // Save the event name to local storage if it exists
+    if (settings.eventName && settings.eventName.trim() !== "") {
+      saveEventToLocalStorage(settings.eventName);
+    }
+
     if (isEditing) {
       onReturnToMatch(settings);
     } else {
@@ -71,11 +132,17 @@ export default function GameSetupScreen({
   const handleEventNameChange = (e) => {
     setSettings({ ...settings, eventName: e.target.value });
     setShowEventSuggestions(true);
+
+    // Optionally save immediately on change
+    // If you want to save only when they select or submit, remove this line
+    // saveEventToLocalStorage(e.target.value);
   };
 
   const selectEvent = (eventName) => {
     setSettings({ ...settings, eventName });
     setShowEventSuggestions(false);
+
+    // No need to save here as the event already exists in the suggestions
   };
 
   const colorOptions = [
