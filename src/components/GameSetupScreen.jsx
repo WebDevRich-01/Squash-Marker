@@ -7,8 +7,21 @@ const saveEventToLocalStorage = (eventName) => {
   if (!eventName || eventName.trim() === "") return;
 
   try {
+    // Debug environment variables
+    console.log("Environment variables in saveEventToLocalStorage:", {
+      USE_LOCAL_STORAGE: import.meta.env.VITE_USE_LOCAL_STORAGE,
+      API_URL: import.meta.env.VITE_API_URL,
+    });
+
     // Check if we're in development mode using environment variable
-    const isDevelopment = process.env.REACT_APP_USE_LOCAL_STORAGE === "true";
+    const envValue = import.meta.env.VITE_USE_LOCAL_STORAGE;
+    const isDevelopment = envValue === "true";
+
+    console.log("isDevelopment calculation:", {
+      envValue,
+      isDevelopment,
+      typeOfEnvValue: typeof envValue,
+    });
 
     if (isDevelopment) {
       // Get existing events
@@ -30,7 +43,12 @@ const saveEventToLocalStorage = (eventName) => {
       }
     } else {
       // In production, save to API
-      const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
+      // Use hardcoded fallback if environment variable is missing
+      const API_URL =
+        import.meta.env.VITE_API_URL ||
+        "https://squash-marker-backend.onrender.com";
+      console.log(`Attempting to save event to API at: ${API_URL}/api/events`);
+
       fetch(`${API_URL}/api/events`, {
         method: "POST",
         headers: {
@@ -42,6 +60,7 @@ const saveEventToLocalStorage = (eventName) => {
         }),
       })
         .then((response) => {
+          console.log("API response status:", response.status);
           if (!response.ok) {
             throw new Error("Failed to save event to API");
           }
