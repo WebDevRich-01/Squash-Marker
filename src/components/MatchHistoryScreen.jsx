@@ -51,8 +51,8 @@ export default function MatchHistoryScreen({ onBack }) {
     const fetchEvents = async () => {
       try {
         // Check if we're in development mode using environment variable
-        const isDevelopment =
-          process.env.REACT_APP_USE_LOCAL_STORAGE === "true";
+        const envValue = import.meta.env.VITE_LOCAL_STORAGE;
+        const isDevelopment = envValue === "true";
 
         if (isDevelopment) {
           // Use local storage in development
@@ -71,7 +71,8 @@ export default function MatchHistoryScreen({ onBack }) {
         } else {
           // Use API in production
           const API_URL =
-            process.env.REACT_APP_API_URL || "http://localhost:3001";
+            import.meta.env.VITE_API_URL ||
+            "https://squash-marker-backend.onrender.com";
           console.log("Fetching events from API:", `${API_URL}/api/events`);
           const response = await fetch(`${API_URL}/api/events`);
           if (!response.ok) {
