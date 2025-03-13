@@ -126,6 +126,29 @@ const api = {
       // Use real API in production
       try {
         console.log("Saving match to API:", matchData);
+
+        // First, save the event if it exists
+        if (matchData.eventName && matchData.eventName.trim() !== "") {
+          try {
+            console.log(`Saving event "${matchData.eventName}" to API`);
+            await fetch(`${API_URL}/api/events`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                name: matchData.eventName,
+                date: new Date().toISOString(),
+              }),
+            });
+            // We don't need to check the response - if the event already exists, the API should handle it
+          } catch (eventError) {
+            console.error("Error saving event to API:", eventError);
+            // Continue with match saving even if event saving fails
+          }
+        }
+
+        // Then save the match
         const response = await fetch(`${API_URL}/api/matches`, {
           method: "POST",
           headers: {
