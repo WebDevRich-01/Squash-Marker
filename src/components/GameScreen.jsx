@@ -93,8 +93,6 @@ export default function GameScreen({ onBackToSetup }) {
     // Get the event name from the store
     const eventName = useGameStore.getState().eventName;
 
-    console.log("GameScreen - eventName from store:", eventName);
-
     // Pass the current game state to the setup screen
     const settingsToPass = {
       preserveScores: true,
@@ -115,8 +113,6 @@ export default function GameScreen({ onBackToSetup }) {
       bestOf: matchSettings.bestOf,
       eventName: eventName,
     };
-
-    console.log("GameScreen - passing to setup:", settingsToPass);
 
     onBackToSetup(settingsToPass);
   };
