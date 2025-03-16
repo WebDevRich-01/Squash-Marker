@@ -10,6 +10,8 @@ function App() {
   const navigate = useNavigate();
   const updateGameSettings = useGameStore((state) => state.updateGameSettings);
   const [hasActiveMatch, setHasActiveMatch] = useState(false);
+  const [currentScreen, setCurrentScreen] = useState("landing");
+  const [gameSettings, setGameSettings] = useState(null);
 
   // Check if there's an active match when the component mounts
   useEffect(() => {
@@ -47,6 +49,36 @@ function App() {
     }
   };
 
+  const handleBackToSetup = (settingsFromGame) => {
+    console.log(
+      "Parent component received settings from game:",
+      settingsFromGame
+    );
+
+    // Store the settings in state
+    setGameSettings({
+      ...settingsFromGame,
+      eventName: settingsFromGame.eventName || "", // Ensure eventName is passed
+    });
+
+    // Navigate to the edit setup route instead of just changing currentScreen
+    navigate("/setup/edit");
+  };
+
+  const handleStartMatch = () => {
+    setHasActiveMatch(true);
+    navigate("/game");
+  };
+
+  const handleReturnToMatch = (settings) => {
+    updateGameSettings(settings);
+    navigate("/game");
+  };
+
+  const handleBackToHome = () => {
+    navigate("/");
+  };
+
   return (
     <div className="h-full flex flex-col">
       <div className="max-w-md mx-auto w-full h-full bg-white shadow-lg">
@@ -76,11 +108,8 @@ function App() {
             element={
               <GameSetupScreen
                 initialSettings={null}
-                onStartMatch={() => {
-                  setHasActiveMatch(true);
-                  navigate("/game");
-                }}
-                onBack={() => navigate("/")}
+                onStartMatch={handleStartMatch}
+                onBack={handleBackToHome}
                 isEditing={false}
               />
             }
@@ -90,12 +119,9 @@ function App() {
             path="/setup/edit"
             element={
               <GameSetupScreen
-                initialSettings={getGameSettings()}
-                onReturnToMatch={(settings) => {
-                  updateGameSettings(settings);
-                  navigate("/game");
-                }}
-                onBack={() => navigate("/")}
+                initialSettings={gameSettings}
+                onReturnToMatch={handleReturnToMatch}
+                onBack={handleBackToHome}
                 isEditing={true}
               />
             }
@@ -103,9 +129,7 @@ function App() {
 
           <Route
             path="/game"
-            element={
-              <GameScreen onBackToSetup={() => navigate("/setup/edit")} />
-            }
+            element={<GameScreen onBackToSetup={handleBackToSetup} />}
           />
 
           <Route

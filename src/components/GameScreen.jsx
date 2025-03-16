@@ -28,6 +28,7 @@ export default function GameScreen({ onBackToSetup }) {
     handleGameCompletion,
     resetGame,
     saveCompletedMatch,
+    matchSettings,
   } = useGameStore();
 
   // Check for game wins without trying to save to backend
@@ -89,18 +90,35 @@ export default function GameScreen({ onBackToSetup }) {
   };
 
   const handleBackToSetup = () => {
+    // Get the event name from the store
+    const eventName = useGameStore.getState().eventName;
+
+    console.log("GameScreen - eventName from store:", eventName);
+
     // Pass the current game state to the setup screen
-    onBackToSetup({
+    const settingsToPass = {
       preserveScores: true,
       currentGame,
       gameScores,
+      player1Name: player1.name,
+      player2Name: player2.name,
+      player1Color: player1.color,
+      player2Color: player2.color,
       player1Score: player1.score,
       player2Score: player2.score,
       player1Serving: player1.serving,
       player2Serving: player2.serving,
       player1ServeSide: player1.serveSide,
       player2ServeSide: player2.serveSide,
-    });
+      pointsToWin: matchSettings.pointsToWin,
+      clearPoints: matchSettings.clearPoints,
+      bestOf: matchSettings.bestOf,
+      eventName: eventName,
+    };
+
+    console.log("GameScreen - passing to setup:", settingsToPass);
+
+    onBackToSetup(settingsToPass);
   };
 
   return (

@@ -85,6 +85,12 @@ export default function GameSetupScreen({
   isEditing,
   onBack,
 }) {
+  console.log("GameSetupScreen - received initialSettings:", initialSettings);
+
+  // Explicitly check for eventName in initialSettings
+  const eventNameFromProps = initialSettings?.eventName || "";
+  console.log("GameSetupScreen - extracted eventName:", eventNameFromProps);
+
   const [settings, setSettings] = useState(
     initialSettings || {
       player1Name: "",
@@ -98,6 +104,25 @@ export default function GameSetupScreen({
       eventName: "",
     }
   );
+
+  // Force update eventName if it's coming from props but not in settings
+  useEffect(() => {
+    if (
+      initialSettings?.eventName &&
+      settings.eventName !== initialSettings.eventName
+    ) {
+      console.log(
+        "GameSetupScreen - updating eventName from props:",
+        initialSettings.eventName
+      );
+      setSettings((prev) => ({
+        ...prev,
+        eventName: initialSettings.eventName,
+      }));
+    }
+  }, [initialSettings, settings.eventName]);
+
+  console.log("GameSetupScreen - settings after useState:", settings);
 
   const [eventNames, setEventNames] = useState([]);
   const [showEventSuggestions, setShowEventSuggestions] = useState(false);
@@ -140,7 +165,10 @@ export default function GameSetupScreen({
       useGameStore.getState().updateGameSettings(settings);
       onReturnToMatch(settings);
     } else {
-      initializeGame(settings);
+      initializeGame({
+        ...settings,
+        eventName: settings.eventName || "",
+      });
       onStartMatch(settings);
     }
   };
