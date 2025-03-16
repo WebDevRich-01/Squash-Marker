@@ -50,18 +50,13 @@ function App() {
   };
 
   const handleBackToSetup = (settingsFromGame) => {
-    console.log(
-      "Parent component received settings from game:",
-      settingsFromGame
-    );
-
     // Store the settings in state
     setGameSettings({
       ...settingsFromGame,
       eventName: settingsFromGame.eventName || "", // Ensure eventName is passed
     });
 
-    // Navigate to the edit setup route instead of just changing currentScreen
+    // Navigate to the edit setup route
     navigate("/setup/edit");
   };
 
