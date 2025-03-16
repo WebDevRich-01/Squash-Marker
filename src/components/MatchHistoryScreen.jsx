@@ -63,17 +63,14 @@ export default function MatchHistoryScreen({ onBack }) {
               ...new Set(parsedEvents.map((event) => event.name)),
             ];
             setEventNames(uniqueEvents);
-            console.log("Loaded events from local storage:", uniqueEvents);
           } else {
             setEventNames([]);
-            console.log("No events found in local storage");
           }
         } else {
           // Use API in production
           const API_URL =
             import.meta.env.VITE_API_URL ||
             "https://squash-marker-backend.onrender.com";
-          console.log("Fetching events from API:", `${API_URL}/api/events`);
           const response = await fetch(`${API_URL}/api/events`);
           if (!response.ok) {
             throw new Error("Failed to fetch events");
@@ -81,7 +78,6 @@ export default function MatchHistoryScreen({ onBack }) {
           const data = await response.json();
           const uniqueEvents = [...new Set(data.map((event) => event.name))];
           setEventNames(uniqueEvents);
-          console.log("Loaded events from API:", uniqueEvents);
         }
       } catch (error) {
         console.error("Error fetching events:", error);

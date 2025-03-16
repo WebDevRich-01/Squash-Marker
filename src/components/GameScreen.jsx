@@ -34,8 +34,6 @@ export default function GameScreen({ onBackToSetup }) {
   useEffect(() => {
     const winner = checkGameWin();
     if (winner) {
-      console.log("Game won by player", winner);
-
       // Store the winner in state to avoid recalculating
       setWinningPlayer(winner);
 

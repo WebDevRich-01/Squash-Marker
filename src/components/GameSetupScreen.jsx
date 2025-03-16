@@ -132,9 +132,6 @@ export default function GameSetupScreen({
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Log the settings to verify eventName is included
-    console.log("Submitting match with settings:", settings);
-
     if (settings.eventName && settings.eventName.trim() !== "") {
       saveEventToLocalStorage(settings.eventName);
     }
