@@ -132,19 +132,17 @@ export default function GameSetupScreen({
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Log the settings to debug
-    console.log("Submitting game setup with settings:", settings);
+    // Log the settings to verify eventName is included
+    console.log("Submitting match with settings:", settings);
 
-    // Save the event name to local storage if it exists
     if (settings.eventName && settings.eventName.trim() !== "") {
       saveEventToLocalStorage(settings.eventName);
     }
 
-    if (isEditing) {
+    if (isEditing && onReturnToMatch) {
       onReturnToMatch(settings);
     } else {
-      initializeGame(settings);
-      onStartMatch();
+      onStartMatch(settings);
     }
   };
 

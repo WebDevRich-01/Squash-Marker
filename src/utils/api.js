@@ -125,7 +125,11 @@ const api = {
     } else {
       // Use real API in production
       try {
-        console.log("Saving match to API:", matchData);
+        // Log the exact data being sent to the API
+        console.log(
+          "Saving match to API with data:",
+          JSON.stringify(matchData, null, 2)
+        );
 
         // First, save the event if it exists
         if (matchData.eventName && matchData.eventName.trim() !== "") {
@@ -141,10 +145,8 @@ const api = {
                 date: new Date().toISOString(),
               }),
             });
-            // We don't need to check the response - if the event already exists, the API should handle it
           } catch (eventError) {
             console.error("Error saving event to API:", eventError);
-            // Continue with match saving even if event saving fails
           }
         }
 
@@ -158,7 +160,10 @@ const api = {
         });
 
         if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
+          // Get more details about the error
+          const errorText = await response.text();
+          console.error(`API error (${response.status}):`, errorText);
+          throw new Error(`API error: ${response.status} - ${errorText}`);
         }
 
         return await response.json();
