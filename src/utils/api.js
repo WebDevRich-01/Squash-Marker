@@ -22,12 +22,6 @@ const isDevelopment = import.meta.env.VITE_USE_LOCAL_STORAGE === "true";
 const API_URL =
   import.meta.env.VITE_API_URL || "https://squash-marker-backend.onrender.com";
 
-console.log("API initialized with:", {
-  isDevelopment,
-  API_URL,
-  VITE_USE_LOCAL_STORAGE: import.meta.env.VITE_USE_LOCAL_STORAGE,
-});
-
 const api = {
   // Get all matches
   getMatches: async () => {
@@ -36,20 +30,17 @@ const api = {
       return new Promise((resolve) => {
         setTimeout(() => {
           const matches = getStoredMatches();
-          console.log("Fetched matches from localStorage:", matches.length);
           resolve(matches);
         }, 300);
       });
     } else {
       // Use real API in production
       try {
-        console.log("Fetching matches from API:", `${API_URL}/api/matches`);
         const response = await fetch(`${API_URL}/api/matches`);
         if (!response.ok) {
           throw new Error(`API error: ${response.status}`);
         }
         const data = await response.json();
-        console.log("Fetched matches from API:", data.length);
         return data;
       } catch (error) {
         console.error("Error fetching matches from API:", error);
@@ -101,8 +92,6 @@ const api = {
             date: new Date().toISOString(),
           };
 
-          console.log("Saving match to localStorage:", newMatch);
-
           matches.unshift(newMatch); // Add to beginning of array
           saveStoredMatches(matches);
 
@@ -125,16 +114,9 @@ const api = {
     } else {
       // Use real API in production
       try {
-        // Log the exact data being sent to the API
-        console.log(
-          "Saving match to API with data:",
-          JSON.stringify(matchData, null, 2)
-        );
-
         // First, save the event if it exists
         if (matchData.eventName && matchData.eventName.trim() !== "") {
           try {
-            console.log(`Saving event "${matchData.eventName}" to API`);
             await fetch(`${API_URL}/api/events`, {
               method: "POST",
               headers: {
@@ -222,7 +204,6 @@ const api = {
           if (storedEvents) {
             const events = JSON.parse(storedEvents);
             const eventNames = events.map((event) => event.name);
-            console.log("Fetched events from localStorage:", eventNames);
             resolve(eventNames);
             return;
           }
@@ -236,21 +217,18 @@ const api = {
                 .filter((name) => name && name.trim() !== "")
             ),
           ];
-          console.log("Extracted events from matches:", eventNames);
           resolve(eventNames);
         }, 300);
       });
     } else {
       // Use real API in production
       try {
-        console.log("Fetching events from API");
         const response = await fetch(`${API_URL}/api/events`);
         if (!response.ok) {
           throw new Error(`API error: ${response.status}`);
         }
         const data = await response.json();
         const eventNames = data.map((event) => event.name);
-        console.log("Fetched events from API:", eventNames);
         return eventNames;
       } catch (error) {
         console.error("Error fetching events from API:", error);
