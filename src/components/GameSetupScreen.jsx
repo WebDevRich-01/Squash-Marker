@@ -136,6 +136,9 @@ export default function GameSetupScreen({
       saveEventToLocalStorage(settings.eventName);
     }
 
+    // Initialize the game state with settings before navigating
+    initializeGame(settings);
+
     if (isEditing && onReturnToMatch) {
       onReturnToMatch(settings);
     } else {
