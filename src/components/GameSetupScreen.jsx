@@ -178,256 +178,262 @@ export default function GameSetupScreen({
   };
 
   return (
-    <div className="h-full flex items-center justify-center bg-gray-100 p-4 overflow-auto">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-        <div className="flex items-center mb-4">
-          <button onClick={onBack} className="p-2">
-            &larr;
-          </button>
-          <h2 className="text-2xl font-bold text-center flex-1">
-            {isEditing ? "Edit Game Settings" : "Game Setup"}
-          </h2>
-        </div>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="border rounded-lg p-4 bg-gray-50 shadow-sm">
-            <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">
-              Event
-            </h3>
-            <div className="relative">
-              <label className="block mb-1 font-medium">Event Name</label>
-              <input
-                type="text"
-                value={settings.eventName}
-                onChange={handleEventNameChange}
-                onFocus={() => setShowEventSuggestions(true)}
-                onBlur={() =>
-                  setTimeout(() => setShowEventSuggestions(false), 200)
-                }
-                className="w-full p-2 border rounded"
-                placeholder="Enter event name"
-              />
-              {showEventSuggestions && filteredEvents.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-auto">
-                  {filteredEvents.map((name, index) => (
-                    <div
-                      key={index}
-                      className="p-2 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => selectEvent(name)}
-                    >
-                      {name}
+    <div className="h-full flex flex-col bg-gray-100 overflow-auto">
+      <div className="sticky top-0 z-10 bg-white p-4 border-b shadow-sm flex items-center">
+        <button onClick={onBack} className="p-2">
+          &larr;
+        </button>
+        <h2 className="text-2xl font-bold text-center flex-1">
+          {isEditing ? "Edit Game Settings" : "Game Setup"}
+        </h2>
+      </div>
+
+      <div className="flex-1 p-4 overflow-auto">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-auto">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="border rounded-lg p-4 bg-gray-50 shadow-sm">
+              <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">
+                Event
+              </h3>
+              <div className="relative">
+                <label className="block mb-1 font-medium">Event Name</label>
+                <input
+                  type="text"
+                  value={settings.eventName}
+                  onChange={handleEventNameChange}
+                  onFocus={() => setShowEventSuggestions(true)}
+                  onBlur={() =>
+                    setTimeout(() => setShowEventSuggestions(false), 200)
+                  }
+                  className="w-full p-2 border rounded"
+                  placeholder="Enter event name"
+                />
+                {showEventSuggestions && filteredEvents.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-auto">
+                    {filteredEvents.map((name, index) => (
+                      <div
+                        key={index}
+                        className="p-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => selectEvent(name)}
+                      >
+                        {name}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="border rounded-lg p-4 bg-gray-50 shadow-sm">
+              <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">
+                Player 1
+              </h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="block mb-1 font-medium">Name</label>
+                  <input
+                    type="text"
+                    value={settings.player1Name}
+                    onChange={(e) =>
+                      setSettings({ ...settings, player1Name: e.target.value })
+                    }
+                    className="w-full p-2 border rounded"
+                    placeholder="Enter name"
+                  />
+                </div>
+
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <div className="relative">
+                      <select
+                        value={settings.player1Color}
+                        onChange={(e) =>
+                          setSettings({
+                            ...settings,
+                            player1Color: e.target.value,
+                          })
+                        }
+                        className="w-full p-2 border rounded appearance-none pl-10"
+                        style={{ zIndex: 30 }}
+                      >
+                        {colorOptions.map((color) => (
+                          <option
+                            key={color.value}
+                            value={color.value}
+                            className="p-2"
+                          >
+                            {color.label}
+                          </option>
+                        ))}
+                      </select>
+                      <div
+                        className={`absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full ${getColorBgClass(
+                          settings.player1Color
+                        )}`}
+                      />
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+                  </div>
 
-          <div className="border rounded-lg p-4 bg-gray-50 shadow-sm">
-            <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">
-              Player 1
-            </h3>
-            <div className="space-y-3">
-              <div>
-                <label className="block mb-1 font-medium">Name</label>
-                <input
-                  type="text"
-                  value={settings.player1Name}
-                  onChange={(e) =>
-                    setSettings({ ...settings, player1Name: e.target.value })
-                  }
-                  className="w-full p-2 border rounded"
-                  placeholder="Enter name"
-                />
-              </div>
-
-              <div className="flex gap-3">
-                <div className="flex-1">
-                  <div className="relative">
-                    <select
-                      value={settings.player1Color}
+                  <div className="flex-1 flex items-center p-2 bg-white rounded border">
+                    <input
+                      type="checkbox"
+                      checked={settings.player1Serving}
                       onChange={(e) =>
                         setSettings({
                           ...settings,
-                          player1Color: e.target.value,
+                          player1Serving: e.target.checked,
+                          player2Serving: !e.target.checked,
                         })
                       }
-                      className="w-full p-2 border rounded appearance-none pl-10"
-                      style={{ zIndex: 30 }}
-                    >
-                      {colorOptions.map((color) => (
-                        <option
-                          key={color.value}
-                          value={color.value}
-                          className="p-2"
-                        >
-                          {color.label}
-                        </option>
-                      ))}
-                    </select>
-                    <div
-                      className={`absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full ${getColorBgClass(
-                        settings.player1Color
-                      )}`}
+                      className="mr-2 h-4 w-4"
                     />
+                    <label className="font-medium">Serves First</label>
                   </div>
-                </div>
-
-                <div className="flex-1 flex items-center p-2 bg-white rounded border">
-                  <input
-                    type="checkbox"
-                    checked={settings.player1Serving}
-                    onChange={(e) =>
-                      setSettings({
-                        ...settings,
-                        player1Serving: e.target.checked,
-                        player2Serving: !e.target.checked,
-                      })
-                    }
-                    className="mr-2 h-4 w-4"
-                  />
-                  <label className="font-medium">Serves First</label>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="border rounded-lg p-4 bg-gray-50 shadow-sm">
-            <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">
-              Player 2
-            </h3>
-            <div className="space-y-3">
-              <div>
-                <label className="block mb-1 font-medium">Name</label>
-                <input
-                  type="text"
-                  value={settings.player2Name}
-                  onChange={(e) =>
-                    setSettings({ ...settings, player2Name: e.target.value })
-                  }
-                  className="w-full p-2 border rounded"
-                  placeholder="Enter name"
-                />
-              </div>
+            <div className="border rounded-lg p-4 bg-gray-50 shadow-sm">
+              <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">
+                Player 2
+              </h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="block mb-1 font-medium">Name</label>
+                  <input
+                    type="text"
+                    value={settings.player2Name}
+                    onChange={(e) =>
+                      setSettings({ ...settings, player2Name: e.target.value })
+                    }
+                    className="w-full p-2 border rounded"
+                    placeholder="Enter name"
+                  />
+                </div>
 
-              <div className="flex gap-3">
-                <div className="flex-1">
-                  <div className="relative">
-                    <select
-                      value={settings.player2Color}
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <div className="relative">
+                      <select
+                        value={settings.player2Color}
+                        onChange={(e) =>
+                          setSettings({
+                            ...settings,
+                            player2Color: e.target.value,
+                          })
+                        }
+                        className="w-full p-2 border rounded appearance-none pl-10"
+                        style={{ zIndex: 30 }}
+                      >
+                        {colorOptions.map((color) => (
+                          <option
+                            key={color.value}
+                            value={color.value}
+                            className="p-2"
+                          >
+                            {color.label}
+                          </option>
+                        ))}
+                      </select>
+                      <div
+                        className={`absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full ${getColorBgClass(
+                          settings.player2Color
+                        )}`}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex-1 flex items-center p-2 bg-white rounded border">
+                    <input
+                      type="checkbox"
+                      checked={!settings.player1Serving}
                       onChange={(e) =>
                         setSettings({
                           ...settings,
-                          player2Color: e.target.value,
+                          player1Serving: !e.target.checked,
+                          player2Serving: e.target.checked,
                         })
                       }
-                      className="w-full p-2 border rounded appearance-none pl-10"
-                      style={{ zIndex: 30 }}
-                    >
-                      {colorOptions.map((color) => (
-                        <option
-                          key={color.value}
-                          value={color.value}
-                          className="p-2"
-                        >
-                          {color.label}
-                        </option>
-                      ))}
-                    </select>
-                    <div
-                      className={`absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full ${getColorBgClass(
-                        settings.player2Color
-                      )}`}
+                      className="mr-2 h-4 w-4"
                     />
+                    <label className="font-medium">Serves First</label>
                   </div>
-                </div>
-
-                <div className="flex-1 flex items-center p-2 bg-white rounded border">
-                  <input
-                    type="checkbox"
-                    checked={!settings.player1Serving}
-                    onChange={(e) =>
-                      setSettings({
-                        ...settings,
-                        player1Serving: !e.target.checked,
-                        player2Serving: e.target.checked,
-                      })
-                    }
-                    className="mr-2 h-4 w-4"
-                  />
-                  <label className="font-medium">Serves First</label>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="border rounded-lg p-4 bg-gray-50 shadow-sm">
-            <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">
-              Match Settings
-            </h3>
-            <div className="space-y-3">
-              <div className="flex gap-3">
-                <div className="flex-1">
-                  <label className="block mb-1 font-medium">
-                    Points to Win
-                  </label>
+            <div className="border rounded-lg p-4 bg-gray-50 shadow-sm">
+              <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">
+                Match Settings
+              </h3>
+              <div className="space-y-3">
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <label className="block mb-1 font-medium">
+                      Points to Win
+                    </label>
+                    <select
+                      value={settings.pointsToWin}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          pointsToWin: Number(e.target.value),
+                        })
+                      }
+                      className="w-full p-2 border rounded"
+                      style={{ zIndex: 30 }}
+                    >
+                      <option value={11}>11 Points</option>
+                      <option value={15}>15 Points</option>
+                    </select>
+                  </div>
+
+                  <div className="flex-1 flex items-end">
+                    <div className="flex items-center p-2 bg-white rounded border w-full">
+                      <input
+                        type="checkbox"
+                        checked={settings.clearPoints === 2}
+                        onChange={(e) =>
+                          setSettings({
+                            ...settings,
+                            clearPoints: e.target.checked ? 2 : 1,
+                          })
+                        }
+                        className="mr-2 h-4 w-4"
+                      />
+                      <label className="font-medium">2 Clear Points</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block mb-1 font-medium">Match Format</label>
                   <select
-                    value={settings.pointsToWin}
+                    value={settings.bestOf}
                     onChange={(e) =>
                       setSettings({
                         ...settings,
-                        pointsToWin: Number(e.target.value),
+                        bestOf: Number(e.target.value),
                       })
                     }
                     className="w-full p-2 border rounded"
                     style={{ zIndex: 30 }}
                   >
-                    <option value={11}>11 Points</option>
-                    <option value={15}>15 Points</option>
+                    <option value={3}>Best of 3</option>
+                    <option value={5}>Best of 5</option>
                   </select>
                 </div>
-
-                <div className="flex-1 flex items-end">
-                  <div className="flex items-center p-2 bg-white rounded border w-full">
-                    <input
-                      type="checkbox"
-                      checked={settings.clearPoints === 2}
-                      onChange={(e) =>
-                        setSettings({
-                          ...settings,
-                          clearPoints: e.target.checked ? 2 : 1,
-                        })
-                      }
-                      className="mr-2 h-4 w-4"
-                    />
-                    <label className="font-medium">2 Clear Points</label>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block mb-1 font-medium">Match Format</label>
-                <select
-                  value={settings.bestOf}
-                  onChange={(e) =>
-                    setSettings({ ...settings, bestOf: Number(e.target.value) })
-                  }
-                  className="w-full p-2 border rounded"
-                  style={{ zIndex: 30 }}
-                >
-                  <option value={3}>Best of 3</option>
-                  <option value={5}>Best of 5</option>
-                </select>
               </div>
             </div>
-          </div>
 
-          <button
-            type="submit"
-            className="w-full py-3 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium text-lg shadow-sm"
-          >
-            {isEditing ? "Return to Match" : "Start Match"}
-          </button>
-        </form>
+            <button
+              type="submit"
+              className="w-full p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              {isEditing ? "Save Changes" : "Start Match"}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
