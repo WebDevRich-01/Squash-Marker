@@ -88,11 +88,26 @@ export default function GameScreen({ onBackToSetup }) {
     onBackToSetup();
   };
 
+  const handleBackToSetup = () => {
+    // Pass the current game state to the setup screen
+    onBackToSetup({
+      preserveScores: true,
+      currentGame,
+      gameScores,
+      player1Score: player1.score,
+      player2Score: player2.score,
+      player1Serving: player1.serving,
+      player2Serving: player2.serving,
+      player1ServeSide: player1.serveSide,
+      player2ServeSide: player2.serveSide,
+    });
+  };
+
   return (
     <div className="h-full flex flex-col overflow-hidden">
       {/* Header */}
       <div className="flex justify-between items-center p-4 border-b shrink-0">
-        <button className="p-2" onClick={onBackToSetup}>
+        <button className="p-2" onClick={handleBackToSetup}>
           &larr;
         </button>
         <div>
