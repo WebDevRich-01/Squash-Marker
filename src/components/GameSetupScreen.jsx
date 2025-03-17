@@ -417,7 +417,7 @@ export default function GameSetupScreen({
                         }
                         className="mr-2 h-4 w-4"
                       />
-                      <label className="font-medium">2 Clear Points</label>
+                      <label className="font-medium">2 Clear</label>
                     </div>
                   </div>
                 </div>
