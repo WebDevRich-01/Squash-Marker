@@ -36,7 +36,10 @@ export default function GameWinModal({
             <h2 className="text-2xl font-bold mb-4 text-center">
               Game {gameNumber - 1} Complete!
             </h2>
-            <p className="text-center mb-6">{playerName} wins the game!</p>
+            <p className="text-center mb-2">{playerName} wins the game!</p>
+            <p className="text-center text-gray-600 mb-6">
+              {playerName} will serve first in the next game.
+            </p>
             <button
               onClick={onStartNext}
               className="w-full p-3 bg-blue-500 text-white rounded hover:bg-blue-600"

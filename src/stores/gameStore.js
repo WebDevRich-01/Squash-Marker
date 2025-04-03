@@ -480,32 +480,46 @@ const useGameStore = create((set, get) => ({
 
   // Start next game
   startNextGame: () =>
-    set((state) => ({
-      ...state,
-      currentGame: state.currentGame + 1,
-      player1: {
-        ...state.player1,
-        score: 0,
-        serving: true,
-        serveSide: "R",
-      },
-      player2: {
-        ...state.player2,
-        score: 0,
-        serving: false,
-        serveSide: "R",
-      },
-      scoreHistory: [
-        {
-          type: "initial",
-          player1Score: 0,
-          player2Score: 0,
-          initialServeSide: "R",
-          servingPlayer: "player1",
-          timestamp: getUniqueTimestamp(),
+    set((state) => {
+      // Determine who won the last game
+      const lastGameIndex = state.gameScores.length - 1;
+      if (lastGameIndex < 0) return state; // No games played yet
+
+      const lastGame = state.gameScores[lastGameIndex];
+      const player1WonLastGame = lastGame.player1 > lastGame.player2;
+
+      console.log(
+        "Previous game winner:",
+        player1WonLastGame ? "Player 1" : "Player 2"
+      );
+
+      return {
+        ...state,
+        currentGame: state.currentGame + 1,
+        player1: {
+          ...state.player1,
+          score: 0,
+          serving: player1WonLastGame, // Player 1 serves if they won the last game
+          serveSide: "R", // Always start on right side
         },
-      ],
-    })),
+        player2: {
+          ...state.player2,
+          score: 0,
+          serving: !player1WonLastGame, // Player 2 serves if they won the last game
+          serveSide: "R", // Always start on right side
+        },
+        scoreHistory: [
+          {
+            type: "initial",
+            player1Score: 0,
+            player2Score: 0,
+            initialServeSide: "R",
+            servingPlayer: player1WonLastGame ? "player1" : "player2",
+            timestamp: getUniqueTimestamp(),
+          },
+        ],
+      };
+    }),
 
   // Initialize game with settings
   initializeGame: (settings) => {

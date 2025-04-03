@@ -53,6 +53,7 @@ export default function GameScreen({ onBackToSetup }) {
   }, [player1.score, player2.score, checkGameWin, handleGameCompletion]);
 
   const handleStartNext = () => {
+    console.log("Starting next game");
     startNextGame();
     setGameWinModalOpen(false);
   };
