@@ -397,6 +397,52 @@ const useGameStore = create((set, get) => ({
             });
           }
 
+          // Check for win conditions (same logic as addPoint)
+          const { pointsToWin, clearPoints } = state.matchSettings;
+          const newPlayerScore = newScore;
+          const opponentScore = state[opponent].score;
+
+          const isWinningPoint =
+            newPlayerScore >= pointsToWin &&
+            newPlayerScore - opponentScore >= clearPoints;
+
+          if (isWinningPoint) {
+            // Record the game score here, same as in addPoint
+            const newGameScores = [
+              ...state.gameScores,
+              {
+                player1: playerNum === 1 ? newPlayerScore : opponentScore,
+                player2: playerNum === 2 ? newPlayerScore : opponentScore,
+              },
+            ];
+
+            const playerWins = newGameScores.filter((s) =>
+              playerNum === 1 ? s.player1 > s.player2 : s.player2 > s.player1
+            ).length;
+            const matchWon = playerWins > state.matchSettings.bestOf / 2;
+
+            return {
+              ...state,
+              [player]: {
+                ...state[player],
+                score: newScore,
+                serving: true,
+                serveSide: isHandout
+                  ? "R"
+                  : state[player].serveSide === "R"
+                  ? "L"
+                  : "R",
+              },
+              [opponent]: {
+                ...state[opponent],
+                serving: false,
+              },
+              scoreHistory: newHistory,
+              gameScores: newGameScores,
+              matchWon,
+            };
+          }
+
           return {
             [player]: {
               ...state[player],
@@ -443,6 +489,58 @@ const useGameStore = create((set, get) => ({
             });
           }
 
+          // Check for win conditions (same logic as addPoint)
+          const { pointsToWin, clearPoints } = state.matchSettings;
+          const newPlayerScore = newScore;
+          const callingPlayerScore = state[player].score;
+
+          const isWinningPoint =
+            newPlayerScore >= pointsToWin &&
+            newPlayerScore - callingPlayerScore >= clearPoints;
+
+          if (isWinningPoint) {
+            // Record the game score here, same as in addPoint
+            // Note: opponent gets the point, so they are the potential winner
+            const opponentPlayerNum = playerNum === 1 ? 2 : 1;
+            const newGameScores = [
+              ...state.gameScores,
+              {
+                player1:
+                  opponentPlayerNum === 1 ? newPlayerScore : callingPlayerScore,
+                player2:
+                  opponentPlayerNum === 2 ? newPlayerScore : callingPlayerScore,
+              },
+            ];
+
+            const playerWins = newGameScores.filter((s) =>
+              opponentPlayerNum === 1
+                ? s.player1 > s.player2
+                : s.player2 > s.player1
+            ).length;
+            const matchWon = playerWins > state.matchSettings.bestOf / 2;
+
+            return {
+              ...state,
+              [opponent]: {
+                ...state[opponent],
+                score: newScore,
+                serving: true,
+                serveSide: willHandout
+                  ? "R"
+                  : state[opponent].serveSide === "R"
+                  ? "L"
+                  : "R",
+              },
+              [player]: {
+                ...state[player],
+                serving: false,
+              },
+              scoreHistory: newHistory,
+              gameScores: newGameScores,
+              matchWon,
+            };
+          }
+
           return {
             [opponent]: {
               ...state[opponent],
@@ -468,7 +566,7 @@ const useGameStore = create((set, get) => ({
     }),
 
   // Record game result and check for match win
-  recordGameWin: (winningPlayer) =>
+  recordGameWin: () =>
     set((state) => {
       // Don't modify gameScores here, it's already handled in addPoint
       // Just return the state with matchWon set to false
@@ -605,8 +703,6 @@ const useGameStore = create((set, get) => ({
 
   // Updated game completion handler
   handleGameCompletion: async () => {
-    const state = get();
-
     // Check if match is won
     const matchWon = get().checkMatchWin();
     if (matchWon) {
