@@ -8,7 +8,7 @@ export default function PlayerButton({ playerNum }) {
     <button
       onClick={() => addPoint(playerNum)}
       className={`
-        w-full p-4 text-lg
+        w-full p-8 text-lg
         border-t-8 ${player.color || "border-transparent"}
         ${player.serving ? "bg-gray-100" : "bg-white"}
       `}
