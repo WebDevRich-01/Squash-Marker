@@ -1,36 +1,35 @@
 export default function LetDecisionModal({ playerNum, onDecision, onCancel }) {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white rounded-lg p-4 w-80 max-w-full">
-        <h2 className="text-xl font-bold mb-4 text-center">Let Decision</h2>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="card p-6 w-80 max-w-full mx-4">
+        <h2 className="text-xl font-bold mb-6 text-center text-slate-800">
+          Let Decision
+        </h2>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           <button
             onClick={() => onDecision("let")}
-            className="w-full p-3 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded"
+            className="w-full p-4 text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg font-medium transition-all duration-200 hover:shadow-md active:scale-95"
           >
-            Let
+            🔄 Let - Replay Point
           </button>
 
           <button
             onClick={() => onDecision("stroke")}
-            className="w-full p-3 text-red-600 bg-red-50 hover:bg-red-100 rounded"
+            className="w-full p-4 text-green-700 bg-green-50 hover:bg-green-100 border border-green-200 rounded-lg font-medium transition-all duration-200 hover:shadow-md active:scale-95"
           >
-            Stroke
+            ✓ Stroke - Award Point
           </button>
 
           <button
             onClick={() => onDecision("nolet")}
-            className="w-full p-3 text-gray-600 bg-gray-50 hover:bg-gray-100 rounded"
+            className="w-full p-4 text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg font-medium transition-all duration-200 hover:shadow-md active:scale-95"
           >
-            No Let
+            ✗ No Let - Opponent Point
           </button>
         </div>
 
-        <button
-          onClick={onCancel}
-          className="w-full mt-4 p-3 bg-gray-200 hover:bg-gray-300 rounded"
-        >
+        <button onClick={onCancel} className="btn-secondary w-full mt-6">
           Cancel
         </button>
       </div>

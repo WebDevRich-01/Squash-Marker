@@ -119,17 +119,24 @@ export default function GameScreen({ onBackToSetup }) {
   };
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className="h-full flex flex-col overflow-hidden bg-slate-50">
       {/* Header */}
-      <div className="flex justify-between items-center p-4 border-b shrink-0">
-        <button className="p-2" onClick={handleBackToSetup}>
-          &larr;
+      <div className="card flex justify-between items-center p-4 m-2 shrink-0">
+        <button
+          className="btn-secondary !py-2 !px-3 text-xl"
+          onClick={handleBackToSetup}
+        >
+          ←
         </button>
-        <div>
-          Game {currentGame} {getGameScoreDisplay()}
+        <div className="text-lg font-semibold text-slate-700">
+          Game {currentGame}{" "}
+          <span className="text-blue-600">{getGameScoreDisplay()}</span>
         </div>
-        <button className="p-2" onClick={() => setCancelModalOpen(true)}>
-          &times;
+        <button
+          className="btn-secondary !py-2 !px-3 text-xl text-red-500 hover:text-red-600"
+          onClick={() => setCancelModalOpen(true)}
+        >
+          ×
         </button>
       </div>
 
@@ -139,16 +146,18 @@ export default function GameScreen({ onBackToSetup }) {
       </div>
 
       {/* Current score and player controls */}
-      <div className="p-4 bg-white shrink-0">
-        <div className="flex gap-4">
+      <div className="card p-6 m-2 shrink-0">
+        <div className="flex gap-6">
           <div className="flex-1">
             {/* Player 1 score and serve indicator */}
-            <div className="text-center mb-2 flex items-center justify-center">
-              <div className="text-6xl font-bold">{player1.score}</div>
+            <div className="text-center mb-4 flex items-center justify-center">
+              <div className="text-6xl font-bold text-slate-800">
+                {player1.score}
+              </div>
               {player1.serving && (
                 <button
                   onClick={() => toggleServeSide(1)}
-                  className="ml-2 text-4xl text-gray-500"
+                  className="ml-3 text-3xl text-blue-500 hover:text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg px-3 py-1 transition-colors duration-200"
                 >
                   {player1.serveSide}
                 </button>
@@ -157,20 +166,22 @@ export default function GameScreen({ onBackToSetup }) {
             <PlayerButton playerNum={1} />
             <button
               onClick={() => handleLetButtonClick(1)}
-              className="w-full p-2 mt-2 bg-gray-200 hover:bg-gray-300"
+              className="btn-let w-full mt-3"
             >
-              Let
+              🏃 Let
             </button>
           </div>
 
           <div className="flex-1">
             {/* Player 2 score and serve indicator */}
-            <div className="text-center mb-2 flex items-center justify-center">
-              <div className="text-6xl font-bold">{player2.score}</div>
+            <div className="text-center mb-4 flex items-center justify-center">
+              <div className="text-6xl font-bold text-slate-800">
+                {player2.score}
+              </div>
               {player2.serving && (
                 <button
                   onClick={() => toggleServeSide(2)}
-                  className="ml-2 text-4xl text-gray-500"
+                  className="ml-3 text-3xl text-blue-500 hover:text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg px-3 py-1 transition-colors duration-200"
                 >
                   {player2.serveSide}
                 </button>
@@ -179,21 +190,20 @@ export default function GameScreen({ onBackToSetup }) {
             <PlayerButton playerNum={2} />
             <button
               onClick={() => handleLetButtonClick(2)}
-              className="w-full p-2 mt-2 bg-gray-200 hover:bg-gray-300"
+              className="btn-let w-full mt-3"
             >
-              Let
+              🏃 Let
             </button>
           </div>
         </div>
       </div>
 
       {/* Undo button */}
-      <button
-        onClick={undoLastPoint}
-        className="w-full p-4 bg-gray-200 hover:bg-gray-300"
-      >
-        Undo
-      </button>
+      <div className="p-2">
+        <button onClick={undoLastPoint} className="btn-undo w-full">
+          ↺ Undo Last Point
+        </button>
+      </div>
 
       {/* Game win modal */}
       {gameWinModalOpen && (
@@ -222,24 +232,24 @@ export default function GameScreen({ onBackToSetup }) {
       {/* Cancel confirmation modal */}
       {cancelModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-80 max-w-full">
-            <h2 className="text-xl font-bold mb-4 text-center">
+          <div className="card p-6 w-80 max-w-full mx-4">
+            <h2 className="text-xl font-bold mb-4 text-center text-slate-800">
               Cancel Match?
             </h2>
-            <p className="text-center mb-6">
+            <p className="text-center mb-6 text-slate-600">
               Are you sure you want to cancel this match? All progress will be
               lost.
             </p>
             <div className="flex gap-4">
               <button
                 onClick={() => handleCancelMatch()}
-                className="flex-1 p-3 bg-red-500 text-white rounded hover:bg-red-600"
+                className="flex-1 p-3 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium transition-all duration-200 hover:shadow-md active:scale-95"
               >
                 Yes, Cancel
               </button>
               <button
                 onClick={() => setCancelModalOpen(false)}
-                className="flex-1 p-3 bg-gray-300 rounded hover:bg-gray-400"
+                className="btn-secondary flex-1"
               >
                 No, Continue
               </button>

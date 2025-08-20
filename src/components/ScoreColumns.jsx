@@ -17,8 +17,8 @@ export default function ScoreColumns() {
   // Only show history if any points have been scored
   if (player1Score === 0 && player2Score === 0) {
     return (
-      <div className="flex-1 flex min-h-0 relative">
-        <div className="absolute top-0 bottom-0 left-[calc(50%-0.5px)] w-[1px] bg-gray-300" />
+      <div className="flex-1 flex min-h-0 relative bg-white m-2 rounded-xl border border-slate-200">
+        <div className="absolute top-0 bottom-0 left-[calc(50%-0.5px)] w-[1px] bg-slate-300" />
       </div>
     );
   }
@@ -29,9 +29,9 @@ export default function ScoreColumns() {
   );
 
   return (
-    <div className="flex-1 flex min-h-0 relative">
+    <div className="flex-1 flex min-h-0 relative bg-white m-2 rounded-xl border border-slate-200">
       {/* Center dividing line */}
-      <div className="absolute top-0 bottom-0 left-[calc(50%-0.5px)] w-[1px] bg-gray-300" />
+      <div className="absolute top-0 bottom-0 left-[calc(50%-0.5px)] w-[1px] bg-slate-300" />
 
       {/* Score rows container */}
       <div
@@ -46,7 +46,7 @@ export default function ScoreColumns() {
           >
             {/* Handout line - show under the losing player's score */}
             {score.isHandout && (
-              <div className="absolute -bottom-0 left-1/3 right-1/3 h-[1px] bg-black" />
+              <div className="absolute -bottom-0 left-1/3 right-1/3 h-[1px] bg-slate-600" />
             )}
 
             {/* Left side (Player 1) */}
@@ -60,11 +60,13 @@ export default function ScoreColumns() {
                   {score.serveSide}
                 </span>
               ) : score.type === "nolet" && score.player === "player1" ? (
-                <span className="text-sm text-gray-500">No Let</span>
+                <span className="text-sm text-slate-500">No Let</span>
               ) : (
                 score.player === "player1" && (
                   <span
-                    className={`text-sm ${score.isLet ? "text-blue-600" : ""}`}
+                    className={`text-sm font-medium ${
+                      score.isLet ? "text-blue-600" : "text-slate-700"
+                    }`}
                   >
                     {score.score}
                     {score.serveSide}
@@ -84,11 +86,13 @@ export default function ScoreColumns() {
                   {score.serveSide}
                 </span>
               ) : score.type === "nolet" && score.player === "player2" ? (
-                <span className="text-sm text-gray-500">No Let</span>
+                <span className="text-sm text-slate-500">No Let</span>
               ) : (
                 score.player === "player2" && (
                   <span
-                    className={`text-sm ${score.isLet ? "text-blue-600" : ""}`}
+                    className={`text-sm font-medium ${
+                      score.isLet ? "text-blue-600" : "text-slate-700"
+                    }`}
                   >
                     {score.score}
                     {score.serveSide}
