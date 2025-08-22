@@ -37,7 +37,7 @@
 
   /* Player button serving state */
   .player-serving {
-    @apply bg-blue-50 border-blue-200 shadow-md;
+    @apply bg-blue-50 shadow-md;
   }
 
   .player-not-serving {

@@ -168,7 +168,7 @@ export default function GameScreen({ onBackToSetup }) {
               onClick={() => handleLetButtonClick(1)}
               className="btn-let w-full mt-3"
             >
-              🏃 Let
+              Let
             </button>
           </div>
 
@@ -192,7 +192,7 @@ export default function GameScreen({ onBackToSetup }) {
               onClick={() => handleLetButtonClick(2)}
               className="btn-let w-full mt-3"
             >
-              🏃 Let
+              Let
             </button>
           </div>
         </div>
