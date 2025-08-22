@@ -42,17 +42,17 @@ export default function ScoreColumns() {
         {filteredHistory.map((score) => (
           <div
             key={score.timestamp}
-            className="w-full h-6 flex relative shrink-0"
+            className="w-full h-8 flex relative shrink-0"
           >
             {/* Handout line - show under the losing player's score */}
             {score.isHandout && (
-              <div className="absolute -bottom-0 left-1/3 right-1/3 h-[1px] bg-slate-600" />
+              <div className="absolute -bottom-1 left-1/4 right-1/4 h-[1px] bg-slate-600" />
             )}
 
             {/* Left side (Player 1) */}
-            <div className="flex-1 flex justify-end pr-2">
+            <div className="flex-1 flex justify-end pr-3">
               {score.player === "player1" && (
-                <span className="text-sm font-medium text-slate-700">
+                <span className="text-base font-medium text-slate-700">
                   {score.score}
                   {score.serveSide}
                 </span>
@@ -60,9 +60,9 @@ export default function ScoreColumns() {
             </div>
 
             {/* Right side (Player 2) */}
-            <div className="flex-1 flex pl-2">
+            <div className="flex-1 flex pl-3">
               {score.player === "player2" && (
-                <span className="text-sm font-medium text-slate-700">
+                <span className="text-base font-medium text-slate-700">
                   {score.score}
                   {score.serveSide}
                 </span>
