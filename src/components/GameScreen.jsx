@@ -5,6 +5,7 @@ import PlayerButton from "./PlayerButton";
 import LetDecisionModal from "./LetDecisionModal";
 import GameWinModal from "./GameWinModal";
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 
 export default function GameScreen({ onBackToSetup }) {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ export default function GameScreen({ onBackToSetup }) {
   const [gameWinModalOpen, setGameWinModalOpen] = useState(false);
   const [winningPlayer, setWinningPlayer] = useState(null);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [matchHistoryModalOpen, setMatchHistoryModalOpen] = useState(false);
 
   const {
     player1,
@@ -27,7 +29,6 @@ export default function GameScreen({ onBackToSetup }) {
     checkGameWin,
     handleGameCompletion,
     resetGame,
-    saveCompletedMatch,
     matchSettings,
   } = useGameStore();
 
@@ -128,10 +129,15 @@ export default function GameScreen({ onBackToSetup }) {
         >
           ←
         </button>
-        <div className="text-lg font-semibold text-slate-700">
+        <button
+          className="text-lg font-semibold text-slate-700 hover:text-slate-900 transition-colors duration-200"
+          onClick={() => setMatchHistoryModalOpen(true)}
+        >
           Game {currentGame}{" "}
-          <span className="text-blue-600">{getGameScoreDisplay()}</span>
-        </div>
+          <span className="text-blue-600 hover:text-blue-700">
+            {getGameScoreDisplay()}
+          </span>
+        </button>
         <button
           className="btn-secondary !py-2 !px-3 text-xl text-red-500 hover:text-red-600"
           onClick={() => setCancelModalOpen(true)}
@@ -229,6 +235,83 @@ export default function GameScreen({ onBackToSetup }) {
         />
       )}
 
+      {/* Match History Modal */}
+      {matchHistoryModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="card p-6 w-96 max-w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <h2 className="text-xl font-bold mb-4 text-center text-slate-800">
+              Match History
+            </h2>
+
+            {gameScores.length === 0 ? (
+              <p className="text-center text-slate-600 mb-6">
+                No games completed yet.
+              </p>
+            ) : (
+              <div className="space-y-3 mb-6">
+                {gameScores.map((game, index) => {
+                  const player1Won = game.player1 > game.player2;
+                  return (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
+                    >
+                      <span className="font-medium text-slate-700">
+                        Game {index + 1}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`font-bold ${
+                            player1Won ? "text-green-600" : "text-slate-600"
+                          }`}
+                        >
+                          {player1.name} {game.player1}
+                        </span>
+                        <span className="text-slate-400">-</span>
+                        <span
+                          className={`font-bold ${
+                            !player1Won ? "text-green-600" : "text-slate-600"
+                          }`}
+                        >
+                          {game.player2} {player2.name}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {/* Current match score summary */}
+                <div className="border-t border-slate-200 pt-3 mt-4">
+                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <span className="font-semibold text-slate-700">
+                      Match Score
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-blue-600">
+                        {player1.name}{" "}
+                        {gameScores.filter((g) => g.player1 > g.player2).length}
+                      </span>
+                      <span className="text-slate-400">-</span>
+                      <span className="font-bold text-blue-600">
+                        {gameScores.filter((g) => g.player2 > g.player1).length}{" "}
+                        {player2.name}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={() => setMatchHistoryModalOpen(false)}
+              className="btn-secondary w-full"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Cancel confirmation modal */}
       {cancelModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -260,3 +343,7 @@ export default function GameScreen({ onBackToSetup }) {
     </div>
   );
 }
+
+GameScreen.propTypes = {
+  onBackToSetup: PropTypes.func.isRequired,
+};
