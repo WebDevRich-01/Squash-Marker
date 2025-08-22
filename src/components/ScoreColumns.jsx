@@ -51,53 +51,21 @@ export default function ScoreColumns() {
 
             {/* Left side (Player 1) */}
             <div className="flex-1 flex justify-end pr-2">
-              {score.type === "let" && score.player === "player1" ? (
-                <span className="text-sm text-blue-600">Let</span>
-              ) : score.type === "stroke" && score.player === "player1" ? (
-                <span className="text-sm">
-                  <span className="text-red-600">Stroke </span>
+              {score.player === "player1" && (
+                <span className="text-sm font-medium text-slate-700">
                   {score.score}
                   {score.serveSide}
                 </span>
-              ) : score.type === "nolet" && score.player === "player1" ? (
-                <span className="text-sm text-slate-500">No Let</span>
-              ) : (
-                score.player === "player1" && (
-                  <span
-                    className={`text-sm font-medium ${
-                      score.isLet ? "text-blue-600" : "text-slate-700"
-                    }`}
-                  >
-                    {score.score}
-                    {score.serveSide}
-                  </span>
-                )
               )}
             </div>
 
             {/* Right side (Player 2) */}
             <div className="flex-1 flex pl-2">
-              {score.type === "let" && score.player === "player2" ? (
-                <span className="text-sm text-blue-600">Let</span>
-              ) : score.type === "stroke" && score.player === "player2" ? (
-                <span className="text-sm">
-                  <span className="text-red-600">Stroke </span>
+              {score.player === "player2" && (
+                <span className="text-sm font-medium text-slate-700">
                   {score.score}
                   {score.serveSide}
                 </span>
-              ) : score.type === "nolet" && score.player === "player2" ? (
-                <span className="text-sm text-slate-500">No Let</span>
-              ) : (
-                score.player === "player2" && (
-                  <span
-                    className={`text-sm font-medium ${
-                      score.isLet ? "text-blue-600" : "text-slate-700"
-                    }`}
-                  >
-                    {score.score}
-                    {score.serveSide}
-                  </span>
-                )
               )}
             </div>
           </div>
