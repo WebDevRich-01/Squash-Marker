@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from "prop-types";
 
 export default function LandingScreen({
   onNewMatch,
@@ -29,3 +29,9 @@ export default function LandingScreen({
     </div>
   );
 }
+
+LandingScreen.propTypes = {
+  onNewMatch: PropTypes.func.isRequired,
+  onFindMatch: PropTypes.func.isRequired,
+  hasActiveMatch: PropTypes.bool.isRequired,
+};
