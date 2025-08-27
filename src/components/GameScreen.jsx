@@ -4,6 +4,7 @@ import ScoreColumns from "./ScoreColumns";
 import PlayerButton from "./PlayerButton";
 import LetDecisionModal from "./LetDecisionModal";
 import GameWinModal from "./GameWinModal";
+import MatchHistoryTable from "./MatchHistoryTable";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
@@ -248,64 +249,13 @@ export default function GameScreen({ onBackToSetup, onFinishMatch }) {
               Match History
             </h2>
 
-            {gameScores.length === 0 ? (
-              <p className="text-center text-slate-600 mb-6">
-                No games completed yet.
-              </p>
-            ) : (
-              <div className="space-y-3 mb-6">
-                {gameScores.map((game, index) => {
-                  const player1Won = game.player1 > game.player2;
-                  return (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
-                    >
-                      <span className="font-medium text-slate-700">
-                        Game {index + 1}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`font-bold ${
-                            player1Won ? "text-green-600" : "text-slate-600"
-                          }`}
-                        >
-                          {player1.name} {game.player1}
-                        </span>
-                        <span className="text-slate-400">-</span>
-                        <span
-                          className={`font-bold ${
-                            !player1Won ? "text-green-600" : "text-slate-600"
-                          }`}
-                        >
-                          {game.player2} {player2.name}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-
-                {/* Current match score summary */}
-                <div className="border-t border-slate-200 pt-3 mt-4">
-                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
-                    <span className="font-semibold text-slate-700">
-                      Match Score
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-blue-600">
-                        {player1.name}{" "}
-                        {gameScores.filter((g) => g.player1 > g.player2).length}
-                      </span>
-                      <span className="text-slate-400">-</span>
-                      <span className="font-bold text-blue-600">
-                        {gameScores.filter((g) => g.player2 > g.player1).length}{" "}
-                        {player2.name}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            <div className="mb-6">
+              <MatchHistoryTable
+                player1={player1}
+                player2={player2}
+                gameScores={gameScores}
+              />
+            </div>
 
             <button
               onClick={() => setMatchHistoryModalOpen(false)}
