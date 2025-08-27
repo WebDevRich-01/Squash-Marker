@@ -1,19 +1,15 @@
 import useGameStore from "../stores/gameStore";
+import PropTypes from "prop-types";
 
 export default function GameWinModal({
   winningPlayer,
   gameNumber,
   matchWon,
-  gameScores,
   onStartNext,
   onFinishMatch,
 }) {
-  const playerName = winningPlayer
-    ? useGameStore(
-        (state) =>
-          state[`player${winningPlayer}`].name || `Player ${winningPlayer}`
-      )
-    : "";
+  const player = useGameStore((state) => state[`player${winningPlayer}`]);
+  const playerName = player?.name || `Player ${winningPlayer}`;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -52,3 +48,11 @@ export default function GameWinModal({
     </div>
   );
 }
+
+GameWinModal.propTypes = {
+  winningPlayer: PropTypes.number.isRequired,
+  gameNumber: PropTypes.number.isRequired,
+  matchWon: PropTypes.bool.isRequired,
+  onStartNext: PropTypes.func.isRequired,
+  onFinishMatch: PropTypes.func.isRequired,
+};
