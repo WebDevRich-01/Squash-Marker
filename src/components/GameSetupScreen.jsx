@@ -206,9 +206,6 @@ export default function GameSetupScreen({
         <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-auto">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="border rounded-lg p-4 bg-gray-50 shadow-sm">
-              <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">
-                Event
-              </h3>
               <div className="relative">
                 <label className="block mb-1 font-medium">Event Name</label>
                 <input
@@ -239,12 +236,11 @@ export default function GameSetupScreen({
             </div>
 
             <div className="border rounded-lg p-4 bg-gray-50 shadow-sm">
-              <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">
-                Player 1
-              </h3>
               <div className="space-y-3">
                 <div>
-                  <label className="block mb-1 font-medium">Name</label>
+                  <label className="block mb-1 font-medium">
+                    Player 1 Name
+                  </label>
                   <input
                     type="text"
                     value={settings.player1Name}
@@ -308,12 +304,11 @@ export default function GameSetupScreen({
             </div>
 
             <div className="border rounded-lg p-4 bg-gray-50 shadow-sm">
-              <h3 className="font-semibold text-lg mb-3 text-center border-b pb-2">
-                Player 2
-              </h3>
               <div className="space-y-3">
                 <div>
-                  <label className="block mb-1 font-medium">Name</label>
+                  <label className="block mb-1 font-medium">
+                    Player 2 Name
+                  </label>
                   <input
                     type="text"
                     value={settings.player2Name}
