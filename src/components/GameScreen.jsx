@@ -94,7 +94,8 @@ export default function GameScreen({ onBackToSetup, onFinishMatch }) {
     if (onFinishMatch) {
       onFinishMatch(); // Notify App component that match is finished
     }
-    onBackToSetup();
+    // Don't call onBackToSetup when canceling - just go back to landing
+    navigate("/");
   };
 
   const handleBackToSetup = () => {
