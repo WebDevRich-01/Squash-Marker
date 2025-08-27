@@ -70,12 +70,12 @@ export default function GameScreen({ onBackToSetup, onFinishMatch }) {
   };
 
   const getGameScoreDisplay = () => {
-    if (!gameScores || gameScores.length === 0) return "(0-0)";
+    if (!gameScores || gameScores.length === 0) return "0-0";
 
     const player1Wins = gameScores.filter((s) => s.player1 > s.player2).length;
     const player2Wins = gameScores.filter((s) => s.player2 > s.player1).length;
 
-    return `(${player1Wins}-${player2Wins})`;
+    return `${player1Wins}-${player2Wins}`;
   };
 
   const handleLetButtonClick = (playerNum) => {
@@ -140,7 +140,6 @@ export default function GameScreen({ onBackToSetup, onFinishMatch }) {
           className="text-lg font-semibold text-slate-700 hover:text-slate-900 transition-colors duration-200"
           onClick={() => setMatchHistoryModalOpen(true)}
         >
-          Game {currentGame}{" "}
           <span className="text-blue-600 hover:text-blue-700">
             {getGameScoreDisplay()}
           </span>
