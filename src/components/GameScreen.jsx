@@ -7,7 +7,7 @@ import GameWinModal from "./GameWinModal";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
-export default function GameScreen({ onBackToSetup }) {
+export default function GameScreen({ onBackToSetup, onFinishMatch }) {
   const navigate = useNavigate();
   const [letModalOpen, setLetModalOpen] = useState(false);
   const [letCallingPlayer, setLetCallingPlayer] = useState(null);
@@ -63,6 +63,9 @@ export default function GameScreen({ onBackToSetup }) {
     // No need to save here as it's already saved in handleGameCompletion
     // Just reset the game state and navigate
     resetGame();
+    if (onFinishMatch) {
+      onFinishMatch(); // Notify App component that match is finished
+    }
     navigate("/");
   };
 
@@ -88,6 +91,9 @@ export default function GameScreen({ onBackToSetup }) {
 
   const handleCancelMatch = () => {
     resetGame();
+    if (onFinishMatch) {
+      onFinishMatch(); // Notify App component that match is finished
+    }
     onBackToSetup();
   };
 
@@ -346,4 +352,5 @@ export default function GameScreen({ onBackToSetup }) {
 
 GameScreen.propTypes = {
   onBackToSetup: PropTypes.func.isRequired,
+  onFinishMatch: PropTypes.func,
 };

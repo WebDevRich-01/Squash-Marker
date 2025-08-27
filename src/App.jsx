@@ -124,7 +124,12 @@ function App() {
 
           <Route
             path="/game"
-            element={<GameScreen onBackToSetup={handleBackToSetup} />}
+            element={
+              <GameScreen
+                onBackToSetup={handleBackToSetup}
+                onFinishMatch={() => setHasActiveMatch(false)}
+              />
+            }
           />
 
           <Route

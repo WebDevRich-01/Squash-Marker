@@ -85,8 +85,6 @@ export default function GameSetupScreen({
   isEditing,
   onBack,
 }) {
-  const eventNameFromProps = initialSettings?.eventName || "";
-
   const [settings, setSettings] = useState(
     initialSettings || {
       player1Name: "",
