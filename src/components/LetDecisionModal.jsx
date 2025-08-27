@@ -13,21 +13,21 @@ export default function LetDecisionModal({ onDecision, onCancel }) {
             onClick={() => onDecision("let")}
             className="w-full p-4 text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg font-medium transition-all duration-200 hover:shadow-md active:scale-95"
           >
-            🔄 Let - Replay Point
+            🔄 Let
           </button>
 
           <button
             onClick={() => onDecision("stroke")}
             className="w-full p-4 text-green-700 bg-green-50 hover:bg-green-100 border border-green-200 rounded-lg font-medium transition-all duration-200 hover:shadow-md active:scale-95"
           >
-            ✓ Stroke - Award Point
+            ✓ Stroke
           </button>
 
           <button
             onClick={() => onDecision("nolet")}
             className="w-full p-4 text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg font-medium transition-all duration-200 hover:shadow-md active:scale-95"
           >
-            ✗ No Let - Opponent Point
+            ✗ No Let
           </button>
         </div>
 
