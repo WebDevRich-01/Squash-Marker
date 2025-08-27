@@ -9,7 +9,7 @@ export default function PlayerButton({ playerNum }) {
     <button
       onClick={() => addPoint(playerNum)}
       className={`
-        w-full p-6 text-lg font-medium rounded-lg
+        w-full p-1 h-24 text-lg font-medium rounded-lg
         border-t-4 ${player.color || "border-slate-300"}
         transition-all duration-200 hover:shadow-lg active:scale-95
         ${
