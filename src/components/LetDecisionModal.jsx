@@ -1,4 +1,6 @@
-export default function LetDecisionModal({ playerNum, onDecision, onCancel }) {
+import PropTypes from "prop-types";
+
+export default function LetDecisionModal({ onDecision, onCancel }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="card p-6 w-80 max-w-full mx-4">
@@ -36,3 +38,8 @@ export default function LetDecisionModal({ playerNum, onDecision, onCancel }) {
     </div>
   );
 }
+
+LetDecisionModal.propTypes = {
+  onDecision: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+};

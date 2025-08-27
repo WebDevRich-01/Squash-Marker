@@ -232,7 +232,6 @@ export default function GameScreen({ onBackToSetup, onFinishMatch }) {
       {/* Let decision modal */}
       {letModalOpen && (
         <LetDecisionModal
-          playerNum={letCallingPlayer}
           onDecision={handleLetDecisionMade}
           onCancel={() => {
             setLetModalOpen(false);
