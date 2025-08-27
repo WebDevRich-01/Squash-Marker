@@ -7,7 +7,7 @@ import GameWinModal from "./GameWinModal";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
-export default function GameScreen({ onBackToSetup }) {
+export default function GameScreen({ onBackToSetup, onFinishMatch }) {
   const navigate = useNavigate();
   const [letModalOpen, setLetModalOpen] = useState(false);
   const [letCallingPlayer, setLetCallingPlayer] = useState(null);
@@ -63,16 +63,19 @@ export default function GameScreen({ onBackToSetup }) {
     // No need to save here as it's already saved in handleGameCompletion
     // Just reset the game state and navigate
     resetGame();
+    if (onFinishMatch) {
+      onFinishMatch(); // Notify App component that match is finished
+    }
     navigate("/");
   };
 
   const getGameScoreDisplay = () => {
-    if (!gameScores || gameScores.length === 0) return "(0-0)";
+    if (!gameScores || gameScores.length === 0) return "0-0";
 
     const player1Wins = gameScores.filter((s) => s.player1 > s.player2).length;
     const player2Wins = gameScores.filter((s) => s.player2 > s.player1).length;
 
-    return `(${player1Wins}-${player2Wins})`;
+    return `${player1Wins}-${player2Wins}`;
   };
 
   const handleLetButtonClick = (playerNum) => {
@@ -88,7 +91,11 @@ export default function GameScreen({ onBackToSetup }) {
 
   const handleCancelMatch = () => {
     resetGame();
-    onBackToSetup();
+    if (onFinishMatch) {
+      onFinishMatch(); // Notify App component that match is finished
+    }
+    // Don't call onBackToSetup when canceling - just go back to landing
+    navigate("/");
   };
 
   const handleBackToSetup = () => {
@@ -133,7 +140,6 @@ export default function GameScreen({ onBackToSetup }) {
           className="text-lg font-semibold text-slate-700 hover:text-slate-900 transition-colors duration-200"
           onClick={() => setMatchHistoryModalOpen(true)}
         >
-          Game {currentGame}{" "}
           <span className="text-blue-600 hover:text-blue-700">
             {getGameScoreDisplay()}
           </span>
@@ -226,7 +232,6 @@ export default function GameScreen({ onBackToSetup }) {
       {/* Let decision modal */}
       {letModalOpen && (
         <LetDecisionModal
-          playerNum={letCallingPlayer}
           onDecision={handleLetDecisionMade}
           onCancel={() => {
             setLetModalOpen(false);
@@ -346,4 +351,5 @@ export default function GameScreen({ onBackToSetup }) {
 
 GameScreen.propTypes = {
   onBackToSetup: PropTypes.func.isRequired,
+  onFinishMatch: PropTypes.func,
 };
