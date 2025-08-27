@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import { useCallback, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import LandingScreen from "./components/LandingScreen";
 import GameSetupScreen from "./components/GameSetupScreen";
 import GameScreen from "./components/GameScreen";
@@ -10,7 +10,6 @@ function App() {
   const navigate = useNavigate();
   const updateGameSettings = useGameStore((state) => state.updateGameSettings);
   const [hasActiveMatch, setHasActiveMatch] = useState(false);
-  const [currentScreen, setCurrentScreen] = useState("landing");
   const [gameSettings, setGameSettings] = useState(null);
 
   // Check if there's an active match when the component mounts
@@ -22,32 +21,6 @@ function App() {
       state.player2.score > 0;
     setHasActiveMatch(hasMatch);
   }, []);
-
-  // Use useCallback to memoize this function
-  const getGameSettings = useCallback(() => {
-    const state = useGameStore.getState();
-    return {
-      player1Name: state.player1.name,
-      player2Name: state.player2.name,
-      player1Color: state.player1.color,
-      player2Color: state.player2.color,
-      pointsToWin: state.matchSettings.pointsToWin,
-      clearPoints: state.matchSettings.clearPoints,
-      bestOf: state.matchSettings.bestOf,
-      player1Serving: state.player1.serving,
-    };
-  }, []);
-
-  // Handle navigation from GameSetupScreen back to landing
-  const handleBackFromSetup = () => {
-    // If we're editing an existing match, preserve the match state
-    if (hasActiveMatch) {
-      navigate("/");
-    } else {
-      // If it's a new match setup, just go back to landing
-      navigate("/");
-    }
-  };
 
   const handleBackToSetup = (settingsFromGame) => {
     // Store the settings in state
