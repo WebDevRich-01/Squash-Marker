@@ -158,7 +158,7 @@ export default function GameScreen({ onBackToSetup, onFinishMatch }) {
           className="btn-secondary !py-2 !px-3 text-xl"
           onClick={handleBackToSetup}
         >
-          ←
+          &larr;
         </button>
         <button
           className="text-lg font-semibold text-slate-700 hover:text-slate-900 transition-colors duration-200"

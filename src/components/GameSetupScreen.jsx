@@ -195,7 +195,7 @@ export default function GameSetupScreen({
     <div className="h-full flex flex-col bg-gray-100 overflow-auto">
       <div className="sticky top-0 z-10 bg-white p-4 border-b shadow-sm flex items-center">
         <button onClick={onBack} className="p-2">
-          ←
+          &larr;
         </button>
         <h2 className="text-2xl font-bold text-center flex-1">
           {isEditing ? "Edit Game Settings" : "Game Setup"}
