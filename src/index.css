@@ -3,12 +3,46 @@
 @layer base {
   html {
     @apply h-full bg-slate-50;
+    /* Prevent zoom on iOS */
+    -webkit-text-size-adjust: 100%;
+    /* Improve scrolling performance */
+    -webkit-overflow-scrolling: touch;
   }
   body {
     @apply h-full font-sans text-slate-900;
+    /* Prevent touch delay on iOS */
+    touch-action: manipulation;
+    /* Hide address bar on mobile */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
   }
   #root {
     @apply h-full;
+    /* Ensure full height on mobile */
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  /* Prevent text selection on buttons and interactive elements */
+  button,
+  .btn-primary,
+  .btn-secondary,
+  .btn-let,
+  .btn-undo {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    /* Prevent touch highlighting */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Improve touch targets for mobile */
+  button,
+  input,
+  select,
+  textarea {
+    min-height: 44px; /* iOS recommended minimum */
   }
 }
 

@@ -4,6 +4,7 @@ import LandingScreen from "./components/LandingScreen";
 import GameSetupScreen from "./components/GameSetupScreen";
 import GameScreen from "./components/GameScreen";
 import MatchHistoryScreen from "./components/MatchHistoryScreen";
+import PWAUpdatePrompt from "./components/PWAUpdatePrompt";
 import useGameStore from "./stores/gameStore";
 
 function App() {
@@ -112,6 +113,9 @@ function App() {
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+
+        {/* PWA Update Prompt */}
+        <PWAUpdatePrompt />
       </div>
     </div>
   );

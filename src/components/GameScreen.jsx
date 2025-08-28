@@ -6,6 +6,7 @@ import LetDecisionModal from "./LetDecisionModal";
 import GameWinModal from "./GameWinModal";
 import MatchHistoryTable from "./MatchHistoryTable";
 import { useNavigate } from "react-router-dom";
+import { useWakeLock } from "../hooks/useWakeLock";
 import PropTypes from "prop-types";
 
 export default function GameScreen({ onBackToSetup, onFinishMatch }) {
@@ -33,6 +34,14 @@ export default function GameScreen({ onBackToSetup, onFinishMatch }) {
     matchSettings,
   } = useGameStore();
 
+  // Wake lock to prevent screen timeout during matches
+  const {
+    isSupported: wakeLockSupported,
+    isActive: wakeLockActive,
+    requestWakeLock,
+    releaseWakeLock,
+  } = useWakeLock();
+
   // Check for game wins without trying to save to backend
   useEffect(() => {
     const winner = checkGameWin();
@@ -53,6 +62,20 @@ export default function GameScreen({ onBackToSetup, onFinishMatch }) {
       setGameWinModalOpen(true);
     }
   }, [player1.score, player2.score, checkGameWin, handleGameCompletion]);
+
+  // Request wake lock when component mounts and release when unmounting
+  useEffect(() => {
+    if (wakeLockSupported) {
+      requestWakeLock();
+    }
+
+    // Cleanup: release wake lock when component unmounts
+    return () => {
+      if (wakeLockActive) {
+        releaseWakeLock();
+      }
+    };
+  }, [wakeLockSupported, requestWakeLock, releaseWakeLock, wakeLockActive]);
 
   const handleStartNext = () => {
     console.log("Starting next game");
