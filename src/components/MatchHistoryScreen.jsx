@@ -224,7 +224,7 @@ export default function MatchHistoryScreen({ onBack }) {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
             <button onClick={onBack} className="p-2 mr-2">
-              &larr;
+              ←
             </button>
             <h1 className="text-2xl font-bold">Match History</h1>
           </div>
