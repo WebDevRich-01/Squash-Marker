@@ -1,10 +1,19 @@
 import PropTypes from "prop-types";
+import { usePWAInstall } from "../hooks/usePWAInstall";
 
 export default function LandingScreen({
   onNewMatch,
   onFindMatch,
   hasActiveMatch,
 }) {
+  const { isInstallable, isInstalled, installApp } = usePWAInstall();
+
+  const handleInstallClick = async () => {
+    const success = await installApp();
+    if (success) {
+      console.log("App installed successfully!");
+    }
+  };
   return (
     <div className="h-full flex flex-col items-center justify-center bg-gray-100 p-4">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md text-center">
@@ -24,6 +33,37 @@ export default function LandingScreen({
           >
             Find Match
           </button>
+
+          {/* PWA Install Button */}
+          {isInstallable && !isInstalled && (
+            <button
+              onClick={handleInstallClick}
+              className="w-full py-3 px-6 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium text-base shadow-sm transition-colors flex items-center justify-center gap-2 mt-6 border-t border-gray-200 pt-6"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              Install App
+            </button>
+          )}
+
+          {/* Installed indicator */}
+          {isInstalled && (
+            <div className="w-full py-3 px-6 bg-green-100 text-green-800 rounded-lg font-medium text-base flex items-center justify-center gap-2 mt-6 border-t border-gray-200 pt-6">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              App Installed
+            </div>
+          )}
         </div>
       </div>
     </div>
