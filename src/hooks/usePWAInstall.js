@@ -3,13 +3,26 @@ import { useState, useEffect } from "react";
 /**
  * Custom hook to manage PWA installation
  * Handles the beforeinstallprompt event and provides install functionality
+ * Includes iOS-specific detection and instructions
  */
 export const usePWAInstall = () => {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isInstallable, setIsInstallable] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const [showIOSInstructions, setShowIOSInstructions] = useState(false);
 
   useEffect(() => {
+    // Detect iOS devices
+    const detectIOS = () => {
+      const userAgent = window.navigator.userAgent.toLowerCase();
+      const isIOSDevice =
+        /ipad|iphone|ipod/.test(userAgent) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      setIsIOS(isIOSDevice);
+      return isIOSDevice;
+    };
+
     // Check if app is already installed
     const checkIfInstalled = () => {
       // Check if running in standalone mode (installed PWA)
@@ -20,9 +33,16 @@ export const usePWAInstall = () => {
       const isIOSInstalled = window.navigator.standalone === true;
 
       setIsInstalled(isStandalone || isIOSInstalled);
+      return isStandalone || isIOSInstalled;
     };
 
-    checkIfInstalled();
+    const iosDetected = detectIOS();
+    const alreadyInstalled = checkIfInstalled();
+
+    // For iOS devices that aren't installed, show install instructions
+    if (iosDetected && !alreadyInstalled) {
+      setIsInstallable(true); // Show install option for iOS
+    }
 
     // Listen for the beforeinstallprompt event
     const handleBeforeInstallPrompt = (event) => {
@@ -54,6 +74,13 @@ export const usePWAInstall = () => {
   }, []);
 
   const installApp = async () => {
+    // Handle iOS installation (show instructions)
+    if (isIOS) {
+      setShowIOSInstructions(!showIOSInstructions);
+      return false;
+    }
+
+    // Handle standard PWA installation
     if (!deferredPrompt) {
       return false;
     }
@@ -86,6 +113,9 @@ export const usePWAInstall = () => {
   return {
     isInstallable,
     isInstalled,
+    isIOS,
+    showIOSInstructions,
     installApp,
+    setShowIOSInstructions,
   };
 };

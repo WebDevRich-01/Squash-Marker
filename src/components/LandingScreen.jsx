@@ -1,12 +1,20 @@
 import PropTypes from "prop-types";
 import { usePWAInstall } from "../hooks/usePWAInstall";
+import IOSInstallInstructions from "./IOSInstallInstructions";
 
 export default function LandingScreen({
   onNewMatch,
   onFindMatch,
   hasActiveMatch,
 }) {
-  const { isInstallable, isInstalled, installApp } = usePWAInstall();
+  const {
+    isInstallable,
+    isInstalled,
+    isIOS,
+    showIOSInstructions,
+    installApp,
+    setShowIOSInstructions,
+  } = usePWAInstall();
 
   const handleInstallClick = async () => {
     const success = await installApp();
@@ -40,14 +48,37 @@ export default function LandingScreen({
               onClick={handleInstallClick}
               className="w-full py-3 px-6 bg-green-500 text-white rounded-lg hover:bg-green-600 font-medium text-base shadow-sm transition-colors flex items-center justify-center gap-2 mt-6 border-t border-gray-200 pt-6"
             >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Install App
+              {isIOS ? (
+                <>
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  How to Install
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  Install App
+                </>
+              )}
             </button>
           )}
 
@@ -66,6 +97,12 @@ export default function LandingScreen({
           )}
         </div>
       </div>
+
+      {/* iOS Install Instructions Modal */}
+      <IOSInstallInstructions
+        isVisible={showIOSInstructions}
+        onClose={() => setShowIOSInstructions(false)}
+      />
     </div>
   );
 }
