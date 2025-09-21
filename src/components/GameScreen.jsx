@@ -5,6 +5,7 @@ import PlayerButton from "./PlayerButton";
 import LetDecisionModal from "./LetDecisionModal";
 import GameWinModal from "./GameWinModal";
 import MatchHistoryTable from "./MatchHistoryTable";
+import PointIndicator from "./PointIndicator";
 import { useNavigate } from "react-router-dom";
 import { useWakeLock } from "../hooks/useWakeLock";
 import PropTypes from "prop-types";
@@ -32,6 +33,8 @@ export default function GameScreen({ onBackToSetup, onFinishMatch }) {
     handleGameCompletion,
     resetGame,
     matchSettings,
+    isGamePoint,
+    isMatchPoint,
   } = useGameStore();
 
   // Wake lock to prevent screen timeout during matches
@@ -198,6 +201,11 @@ export default function GameScreen({ onBackToSetup, onFinishMatch }) {
                   {player1.serveSide}
                 </button>
               )}
+              {/* Game/Match Point Indicator for Player 1 */}
+              {isMatchPoint(1) && <PointIndicator type="match" />}
+              {!isMatchPoint(1) && isGamePoint(1) && (
+                <PointIndicator type="game" />
+              )}
             </div>
             <PlayerButton playerNum={1} />
             <button
@@ -221,6 +229,11 @@ export default function GameScreen({ onBackToSetup, onFinishMatch }) {
                 >
                   {player2.serveSide}
                 </button>
+              )}
+              {/* Game/Match Point Indicator for Player 2 */}
+              {isMatchPoint(2) && <PointIndicator type="match" />}
+              {!isMatchPoint(2) && isGamePoint(2) && (
+                <PointIndicator type="game" />
               )}
             </div>
             <PlayerButton playerNum={2} />

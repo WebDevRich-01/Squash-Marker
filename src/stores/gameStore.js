@@ -95,6 +95,41 @@ const useGameStore = create((set, get) => ({
     return 0;
   },
 
+  // Check if it's game point for a player
+  isGamePoint: (playerNum) => {
+    const state = get();
+    const { pointsToWin, clearPoints } = state.matchSettings;
+    const player = state[`player${playerNum}`];
+    const opponent = state[`player${playerNum === 1 ? 2 : 1}`];
+
+    // Player is at game point if they need one more point to win
+    const wouldWinWithOneMorePoint =
+      player.score + 1 >= pointsToWin &&
+      player.score + 1 - opponent.score >= clearPoints;
+
+    return wouldWinWithOneMorePoint;
+  },
+
+  // Check if it's match point for a player
+  isMatchPoint: (playerNum) => {
+    const state = get();
+
+    // First check if it's game point
+    const isGamePoint = get().isGamePoint(playerNum);
+    if (!isGamePoint) return false;
+
+    // Then check if winning this game would win the match
+    const currentGameWins = state.gameScores.filter((game) =>
+      playerNum === 1
+        ? game.player1 > game.player2
+        : game.player2 > game.player1
+    ).length;
+
+    // If they win this game, would they have enough games to win the match?
+    const gamesNeededToWin = Math.ceil(state.matchSettings.bestOf / 2);
+    return currentGameWins + 1 >= gamesNeededToWin;
+  },
+
   addPoint: (playerNum) =>
     set((state) => {
       const player = `player${playerNum}`;
