@@ -251,20 +251,45 @@ export default function GameSetupScreen({
                     />
                   </div>
 
-                  <div className="flex-1 flex items-center p-2 bg-white rounded border">
-                    <input
-                      type="checkbox"
-                      checked={settings.player1Serving}
-                      onChange={(e) =>
-                        setSettings({
-                          ...settings,
-                          player1Serving: e.target.checked,
-                          player2Serving: !e.target.checked,
-                        })
-                      }
-                      className="mr-2 h-4 w-4"
-                    />
-                    <label className="font-medium">Serves First</label>
+                  <div className="flex-1">
+                    <label className="flex items-center p-2 bg-white rounded border cursor-pointer hover:bg-gray-50 transition-colors duration-200">
+                      <div className="relative mr-3">
+                        <input
+                          type="checkbox"
+                          checked={settings.player1Serving}
+                          onChange={(e) =>
+                            setSettings({
+                              ...settings,
+                              player1Serving: e.target.checked,
+                              player2Serving: !e.target.checked,
+                            })
+                          }
+                          className="sr-only"
+                        />
+                        <div
+                          className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors duration-200 ${
+                            settings.player1Serving
+                              ? "bg-blue-500 border-blue-500"
+                              : "bg-white border-gray-300"
+                          }`}
+                        >
+                          {settings.player1Serving && (
+                            <svg
+                              className="w-3 h-3 text-white"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                      <span className="font-medium">Serves First</span>
+                    </label>
                   </div>
                 </div>
               </div>
@@ -300,20 +325,45 @@ export default function GameSetupScreen({
                     />
                   </div>
 
-                  <div className="flex-1 flex items-center p-2 bg-white rounded border">
-                    <input
-                      type="checkbox"
-                      checked={!settings.player1Serving}
-                      onChange={(e) =>
-                        setSettings({
-                          ...settings,
-                          player1Serving: !e.target.checked,
-                          player2Serving: e.target.checked,
-                        })
-                      }
-                      className="mr-2 h-4 w-4"
-                    />
-                    <label className="font-medium">Serves First</label>
+                  <div className="flex-1">
+                    <label className="flex items-center p-2 bg-white rounded border cursor-pointer hover:bg-gray-50 transition-colors duration-200">
+                      <div className="relative mr-3">
+                        <input
+                          type="checkbox"
+                          checked={!settings.player1Serving}
+                          onChange={(e) =>
+                            setSettings({
+                              ...settings,
+                              player1Serving: !e.target.checked,
+                              player2Serving: e.target.checked,
+                            })
+                          }
+                          className="sr-only"
+                        />
+                        <div
+                          className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors duration-200 ${
+                            !settings.player1Serving
+                              ? "bg-blue-500 border-blue-500"
+                              : "bg-white border-gray-300"
+                          }`}
+                        >
+                          {!settings.player1Serving && (
+                            <svg
+                              className="w-3 h-3 text-white"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                      <span className="font-medium">Serves First</span>
+                    </label>
                   </div>
                 </div>
               </div>
@@ -346,20 +396,43 @@ export default function GameSetupScreen({
                   </div>
 
                   <div className="flex-1 flex items-end">
-                    <div className="flex items-center p-2 bg-white rounded border w-full">
-                      <input
-                        type="checkbox"
-                        checked={settings.clearPoints === 2}
-                        onChange={(e) =>
-                          setSettings({
-                            ...settings,
-                            clearPoints: e.target.checked ? 2 : 1,
-                          })
-                        }
-                        className="mr-2 h-4 w-4"
-                      />
-                      <label className="font-medium">2 Clear</label>
-                    </div>
+                    <label className="flex items-center p-2 bg-white rounded border cursor-pointer hover:bg-gray-50 transition-colors duration-200 w-full">
+                      <div className="relative mr-3">
+                        <input
+                          type="checkbox"
+                          checked={settings.clearPoints === 2}
+                          onChange={(e) =>
+                            setSettings({
+                              ...settings,
+                              clearPoints: e.target.checked ? 2 : 1,
+                            })
+                          }
+                          className="sr-only"
+                        />
+                        <div
+                          className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors duration-200 ${
+                            settings.clearPoints === 2
+                              ? "bg-blue-500 border-blue-500"
+                              : "bg-white border-gray-300"
+                          }`}
+                        >
+                          {settings.clearPoints === 2 && (
+                            <svg
+                              className="w-3 h-3 text-white"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                      <span className="font-medium">2 Clear Points</span>
+                    </label>
                   </div>
                 </div>
 
