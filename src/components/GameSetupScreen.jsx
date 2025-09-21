@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import useGameStore from "../stores/gameStore";
 import PropTypes from "prop-types";
 import api from "../utils/api";
+import ColorDropdown from "./ColorDropdown";
 
 const saveEventToLocalStorage = (eventName) => {
   if (!eventName || eventName.trim() === "") return;
@@ -176,21 +177,6 @@ export default function GameSetupScreen({
     // No need to save here as the event already exists in the suggestions
   };
 
-  const colorOptions = [
-    { value: "border-red-500", label: "Red", bgClass: "bg-red-500" },
-    { value: "border-blue-500", label: "Blue", bgClass: "bg-blue-500" },
-    { value: "border-green-500", label: "Green", bgClass: "bg-green-500" },
-    { value: "border-yellow-500", label: "Yellow", bgClass: "bg-yellow-500" },
-    { value: "border-purple-500", label: "Purple", bgClass: "bg-purple-500" },
-    { value: "border-black", label: "Black", bgClass: "bg-black" },
-    { value: "border-white", label: "White", bgClass: "bg-white border" },
-  ];
-
-  const getColorBgClass = (colorValue) => {
-    const color = colorOptions.find((c) => c.value === colorValue);
-    return color ? color.bgClass : "";
-  };
-
   return (
     <div className="h-full flex flex-col bg-gray-100 overflow-auto">
       <div className="sticky top-0 z-10 bg-white p-4 border-b shadow-sm flex items-center">
@@ -254,34 +240,15 @@ export default function GameSetupScreen({
 
                 <div className="flex gap-3">
                   <div className="flex-1">
-                    <div className="relative">
-                      <select
-                        value={settings.player1Color}
-                        onChange={(e) =>
-                          setSettings({
-                            ...settings,
-                            player1Color: e.target.value,
-                          })
-                        }
-                        className="w-full p-2 border rounded appearance-none pl-10"
-                        style={{ zIndex: 30 }}
-                      >
-                        {colorOptions.map((color) => (
-                          <option
-                            key={color.value}
-                            value={color.value}
-                            className="p-2"
-                          >
-                            {color.label}
-                          </option>
-                        ))}
-                      </select>
-                      <div
-                        className={`absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full ${getColorBgClass(
-                          settings.player1Color
-                        )}`}
-                      />
-                    </div>
+                    <ColorDropdown
+                      selectedColor={settings.player1Color}
+                      onColorChange={(color) =>
+                        setSettings({
+                          ...settings,
+                          player1Color: color,
+                        })
+                      }
+                    />
                   </div>
 
                   <div className="flex-1 flex items-center p-2 bg-white rounded border">
@@ -322,34 +289,15 @@ export default function GameSetupScreen({
 
                 <div className="flex gap-3">
                   <div className="flex-1">
-                    <div className="relative">
-                      <select
-                        value={settings.player2Color}
-                        onChange={(e) =>
-                          setSettings({
-                            ...settings,
-                            player2Color: e.target.value,
-                          })
-                        }
-                        className="w-full p-2 border rounded appearance-none pl-10"
-                        style={{ zIndex: 30 }}
-                      >
-                        {colorOptions.map((color) => (
-                          <option
-                            key={color.value}
-                            value={color.value}
-                            className="p-2"
-                          >
-                            {color.label}
-                          </option>
-                        ))}
-                      </select>
-                      <div
-                        className={`absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-full ${getColorBgClass(
-                          settings.player2Color
-                        )}`}
-                      />
-                    </div>
+                    <ColorDropdown
+                      selectedColor={settings.player2Color}
+                      onColorChange={(color) =>
+                        setSettings({
+                          ...settings,
+                          player2Color: color,
+                        })
+                      }
+                    />
                   </div>
 
                   <div className="flex-1 flex items-center p-2 bg-white rounded border">
