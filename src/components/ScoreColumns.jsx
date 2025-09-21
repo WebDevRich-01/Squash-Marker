@@ -46,7 +46,7 @@ export default function ScoreColumns() {
           >
             {/* Handout line - show under the losing player's score */}
             {score.isHandout && (
-              <div className="absolute -bottom-1 left-1/4 right-1/4 h-[1px] bg-slate-600" />
+              <div className="absolute -bottom-1 mb-2 left-1/4 right-1/4 h-[1px] bg-slate-600" />
             )}
 
             {/* Left side (Player 1) */}
